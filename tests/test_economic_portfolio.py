@@ -113,6 +113,18 @@ def test_feed_shortage_protects_wheat():
     assert meta["feed_need"] > meta["feed_available"]
 
 
+def test_irrelevant_action_fast_path_is_exact_noop():
+    action = {
+        "farmer": ["PASS"],
+        "hands": [],
+        "market": [["SELL", "CARROT", 1]],
+    }
+    out, meta = _run(_observation(), action)
+    assert out is action
+    assert not meta["applied"]
+    assert meta["reason"] == "no_switchable_investment"
+
+
 def test_switch_only_never_drops_action_slots():
     action = {
         "farmer": ["PLANT", "WHEAT"],
@@ -133,5 +145,6 @@ if __name__ == "__main__":
     test_before_activation_is_exact_noop()
     test_pizza_scarcity_switches_seed_to_tomato()
     test_feed_shortage_protects_wheat()
+    test_irrelevant_action_fast_path_is_exact_noop()
     test_switch_only_never_drops_action_slots()
     print("ECONOMIC_PORTFOLIO_TESTS_OK")

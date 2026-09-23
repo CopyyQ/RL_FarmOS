@@ -1180,6 +1180,49 @@ def apply_portfolio_switch_overlay(
             "events": [],
         }
 
+    # Fast path: forward economics is only needed when this frame actually
+    # contains an investment target the overlay is allowed to rewrite.
+    # This is semantically exact because the overlay never adds action slots.
+    source_mode = str(source_mode)
+    action_map = action if isinstance(action, dict) else {}
+    switchable = False
+    for order in list(action_map.get("market") or []):
+        if (
+            isinstance(order, (list, tuple))
+            and len(order) >= 2
+            and str(order[0]) == "BUY_SEED"
+            and str(order[1]) in CROP_META
+            and (
+                source_mode != "wheat"
+                or str(order[1]) == "WHEAT"
+            )
+        ):
+            switchable = True
+            break
+    if not switchable:
+        commands = [action_map.get("farmer")]
+        commands.extend(list(action_map.get("hands") or []))
+        for command in commands:
+            if (
+                isinstance(command, (list, tuple))
+                and len(command) >= 2
+                and str(command[0]) == "PLANT"
+                and str(command[1]) in CROP_META
+                and (
+                    source_mode != "wheat"
+                    or str(command[1]) == "WHEAT"
+                )
+            ):
+                switchable = True
+                break
+    if not switchable:
+        return action, {
+            "applied": False,
+            "reason": "no_switchable_investment",
+            "step": step,
+            "events": [],
+        }
+
     farm, _ = _farm(observation)
     if farm is None:
         return action, {"applied": False, "reason": "no_farm", "events": []}
