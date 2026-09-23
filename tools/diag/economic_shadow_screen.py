@@ -13,6 +13,7 @@ sys.path[:0] = [str(ROOT / "vendor"), str(ROOT / "src"), str(ROOT)]
 from kaggle_environments import make
 
 from kaggrl.v4_farm_supervisor import apply_portfolio_switch_overlay
+from kaggrl.v45_economics import CROP_META, ANIMAL_META
 from rollout.v4_hybrid_agent import V4HybridRolloutAgent
 from v45_skill_runtime_actkeep import V45SkillActKeepRuntime
 from winner_train import ALLOWED_MARKETS
@@ -74,12 +75,13 @@ def run_baseline(seed, seat):
 def relevant_action(action):
     action = action if isinstance(action, dict) else {}
     for order in list(action.get("market") or []):
-        if (
-            isinstance(order, (list, tuple))
-            and len(order) >= 2
-            and str(order[0]) == "BUY_SEED"
-            and str(order[1]) == "WHEAT"
-        ):
+        if not isinstance(order, (list, tuple)) or len(order) < 2:
+            continue
+        op = str(order[0])
+        item = str(order[1])
+        if op == "BUY_SEED" and item in CROP_META:
+            return True
+        if op == "BUY_ANIMAL" and item in ANIMAL_META:
             return True
     commands = [action.get("farmer")]
     commands.extend(list(action.get("hands") or []))
@@ -88,7 +90,7 @@ def relevant_action(action):
             isinstance(command, (list, tuple))
             and len(command) >= 2
             and str(command[0]) == "PLANT"
-            and str(command[1]) == "WHEAT"
+            and str(command[1]) in CROP_META
         ):
             return True
     return False
@@ -117,6 +119,19 @@ def candidate_kwargs(options):
         "source_mode": str(
             options.get("portfolio_source_mode", "wheat")
         ),
+        "objective": str(
+            options.get("portfolio_objective", "best_crop_roi")
+        ),
+        "forced_animal": options.get("portfolio_forced_animal"),
+        "animal_min_roi": float(
+            options.get("portfolio_animal_min_roi", 1.0)
+        ),
+        "animal_payback_margin": float(
+            options.get("portfolio_animal_payback_margin", 0.0)
+        ),
+        "diversity_penalty": float(
+            options.get("portfolio_diversity_penalty", 0.20)
+        ),
     }
 
 
@@ -127,8 +142,16 @@ def evaluate_candidate(candidate, trajectories, catastrophe_seed, normal_seed):
             "id": candidate["id"],
             "baseline": True,
             "score": 0.0,
+            "gate_pass": True,
+            "requires_tomato_adaptation": False,
             "catastrophe_tomato_switches": 0,
+            "catastrophe_wrong_crop_switches": 0,
             "normal_switches": 0,
+            "normal_tomato_forces": 0,
+            "normal_wool_breaks": 0,
+            "normal_wool_support_switches": 0,
+            "normal_crop_switches": 0,
+            "normal_animal_switches": 0,
             "wrong_target_switches": 0,
             "early_switches": 0,
             "events": {},
@@ -138,7 +161,13 @@ def evaluate_candidate(candidate, trajectories, catastrophe_seed, normal_seed):
     kwargs = candidate_kwargs(options)
     counts = Counter()
     cat_tomato = 0
+    catastrophe_wrong_crop = 0
     normal_switches = 0
+    normal_tomato_forces = 0
+    normal_wool_breaks = 0
+    normal_wool_support = 0
+    normal_crop_switches = 0
+    normal_animal_switches = 0
     wrong = 0
     early = 0
 
@@ -160,12 +189,26 @@ def evaluate_candidate(candidate, trajectories, catastrophe_seed, normal_seed):
                 dst = str(event.get("to", ""))
                 key = f"{seed}:{seat}:{kind}:{src}->{dst}:d{step//24}"
                 counts[key] += 1
-                if seed == catastrophe_seed and dst == "TOMATO":
-                    cat_tomato += 1
-                elif seed == catastrophe_seed and dst != "TOMATO":
-                    wrong += 1
+                is_crop = kind in ("switch_seed", "switch_plant")
+                is_animal = kind == "switch_animal"
+                if seed == catastrophe_seed and is_crop:
+                    if dst == "TOMATO":
+                        cat_tomato += 1
+                    else:
+                        catastrophe_wrong_crop += 1
+                        wrong += 1
                 if seed == normal_seed:
                     normal_switches += 1
+                    if is_crop:
+                        normal_crop_switches += 1
+                        if dst == "TOMATO":
+                            normal_tomato_forces += 1
+                    if is_animal:
+                        normal_animal_switches += 1
+                        if src == "SHEEP" and dst != "SHEEP":
+                            normal_wool_breaks += 1
+                        if src != "SHEEP" and dst == "SHEEP":
+                            normal_wool_support += 1
                 if step < 12 * 24:
                     early += 1
 
@@ -176,20 +219,39 @@ def evaluate_candidate(candidate, trajectories, catastrophe_seed, normal_seed):
         behavior_payload.encode()
     ).hexdigest()[:16]
 
-    # Reward correct catastrophe adaptation; penalize touching the normal
-    # control, wrong targets, and very early portfolio churn.
+    # Hard-gate semantics are regime-specific: crop-capable candidates must
+    # recognize the catastrophic TOMATO opportunity, while the normal control
+    # must never be forced into TOMATO and an existing SHEEP/WOOL path must not
+    # be redirected away from SHEEP. Other animal switches are not blanket
+    # failures because they may strengthen the WOOL regime.
+    requires_tomato_adaptation = str(kwargs["objective"]) != "animal"
+    gate_pass = (
+        normal_tomato_forces == 0
+        and normal_wool_breaks == 0
+        and (not requires_tomato_adaptation or cat_tomato > 0)
+    )
     score = (
         100.0 * cat_tomato
-        - 180.0 * normal_switches
-        - 120.0 * wrong
-        - 60.0 * early
+        + 30.0 * normal_wool_support
+        - 250.0 * normal_tomato_forces
+        - 300.0 * normal_wool_breaks
+        - 120.0 * catastrophe_wrong_crop
+        - 20.0 * early
     )
     return {
         "id": candidate["id"],
         "baseline": False,
         "score": float(score),
+        "gate_pass": bool(gate_pass),
+        "requires_tomato_adaptation": bool(requires_tomato_adaptation),
         "catastrophe_tomato_switches": int(cat_tomato),
+        "catastrophe_wrong_crop_switches": int(catastrophe_wrong_crop),
         "normal_switches": int(normal_switches),
+        "normal_tomato_forces": int(normal_tomato_forces),
+        "normal_wool_breaks": int(normal_wool_breaks),
+        "normal_wool_support_switches": int(normal_wool_support),
+        "normal_crop_switches": int(normal_crop_switches),
+        "normal_animal_switches": int(normal_animal_switches),
         "wrong_target_switches": int(wrong),
         "early_switches": int(early),
         "events": dict(sorted(counts.items())),
@@ -226,6 +288,10 @@ def main():
         Path(args.candidates).read_text(encoding="utf-8")
     )
     candidates = list(manifest["candidates"])
+    family_by_id = {
+        candidate["id"]: str(candidate.get("family", "unclassified"))
+        for candidate in candidates
+    }
 
     trajectories = {}
     for seed in (args.catastrophe_seed, args.normal_seed):
@@ -248,37 +314,64 @@ def main():
         print(
             f"[SHADOW] {index:03d}/{len(candidates):03d} "
             f"{report['id']} score={report['score']:+.0f} "
+            f"gate={int(bool(report.get('gate_pass', report['baseline'])))} "
             f"cat_tom={report['catastrophe_tomato_switches']} "
-            f"normal={report['normal_switches']} "
-            f"wrong={report['wrong_target_switches']} "
+            f"normal_tom={report.get('normal_tomato_forces', 0)} "
+            f"wool_break={report.get('normal_wool_breaks', 0)} "
+            f"wool_support={report.get('normal_wool_support_switches', 0)} "
             f"early={report['early_switches']}",
             flush=True,
         )
 
     reports.sort(
         key=lambda row: (
+            not bool(row.get("gate_pass", False)),
             bool(row["baseline"]),
             -float(row["score"]),
             -int(row["catastrophe_tomato_switches"]),
-            int(row["normal_switches"]),
+            int(row.get("normal_tomato_forces", 0)),
+            int(row.get("normal_wool_breaks", 0)),
         )
     )
     selected = []
+    selected_ids = set()
     seen = set()
-    for row in reports:
-        if row["baseline"]:
-            continue
-        if row["catastrophe_tomato_switches"] <= 0:
-            continue
-        if row["normal_switches"] > 0:
+    eligible = [
+        row for row in reports
+        if not row["baseline"] and bool(row.get("gate_pass", False))
+    ]
+
+    # Preserve at least one passing behavior from every surviving semantic
+    # family before filling the remaining slots by score. This prevents the
+    # hard gate from recreating the V1 failure mode where many configurations
+    # collapse into one dominant crop-only behavior family.
+    families = sorted({family_by_id.get(row["id"], "unclassified") for row in eligible})
+    for family in families:
+        for row in eligible:
+            if family_by_id.get(row["id"], "unclassified") != family:
+                continue
+            # Semantic family preservation is stronger than shadow-signature
+            # dedup here: a family may be dormant on the two gate seeds but
+            # activate on the broader 12-game targeted stage.
+            signature = row["behavior_signature"]
+            seen.add(signature)
+            selected.append(row["id"])
+            selected_ids.add(row["id"])
+            break
+        if len(selected) >= int(args.keep):
+            break
+
+    for row in eligible:
+        if len(selected) >= int(args.keep):
+            break
+        if row["id"] in selected_ids:
             continue
         signature = row["behavior_signature"]
         if signature in seen:
             continue
         seen.add(signature)
         selected.append(row["id"])
-        if len(selected) >= int(args.keep):
-            break
+        selected_ids.add(row["id"])
 
     baseline = next(
         candidate for candidate in candidates

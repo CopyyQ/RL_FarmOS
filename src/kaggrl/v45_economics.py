@@ -125,6 +125,53 @@ def _sequential_sale_revenue(
     }
 
 
+def projected_animal_payback(snapshot, observation, animal: str):
+    """Projected full-horizon payback for one new animal.
+
+    Uses first-yield timing, shop/center sink before first yield, sequential
+    sale revenue, and a WHEAT feed shadow cost. This is intentionally
+    conservative and deterministic so diagnostics and runtime can share the
+    same semantics.
+    """
+    animal = str(animal)
+    if animal not in ANIMAL_META:
+        return {"roi": 0.0, "margin": -1.0, "revenue": 0.0, "cost": 0.0, "cycles": 0}
+    ad = ANIMAL_META[animal]
+    remaining_days = float(snapshot.get("remaining_days", 0.0) or 0.0)
+    first = float(ad["first"])
+    interval = max(1.0, float(ad["interval"]))
+    if remaining_days < first + 0.25:
+        return {
+            "roi": 0.0, "margin": -1.0, "revenue": 0.0,
+            "cost": float(ad["cost"]), "cycles": 0,
+            "projected_inventory": 0,
+        }
+    cycles = 1 + int(max(0.0, remaining_days - first) // interval)
+    product = str(ad["product"])
+    market = _get(observation, "market", {}) or {}
+    inventory = _get(market, "inventory", {}) or {}
+    prices = _get(market, "prices", {}) or {}
+    inv0 = float(_get(inventory, product, 10000) or 0.0)
+    future_sink = float((snapshot.get("future_sink") or {}).get(product, 0.0) or 0.0)
+    first_fraction = min(1.0, first / max(1e-6, remaining_days))
+    projected_inventory = max(0.0, inv0 - future_sink * first_fraction)
+    sale = _sequential_sale_revenue(product, cycles, projected_inventory)
+    revenue = float(sale["revenue"])
+    wheat_price = float(_get(prices, "WHEAT", ECON_BASE_PRICE["WHEAT"]) or ECON_BASE_PRICE["WHEAT"])
+    feed_shadow = max(3.0, 0.25 * wheat_price)
+    total_cost = float(ad["cost"]) + remaining_days * feed_shadow
+    roi = revenue / max(1.0, total_cost)
+    return {
+        "roi": float(roi),
+        "margin": float((revenue - total_cost) / max(1.0, total_cost)),
+        "revenue": float(revenue),
+        "cost": float(total_cost),
+        "cycles": int(cycles),
+        "projected_inventory": int(round(projected_inventory)),
+        "average_price": float(sale["average_price"]),
+    }
+
+
 def _time_state(observation, configuration=None):
     turns_per_day = max(1, int(_get(configuration, "turnsPerDay", 24) or 24))
     episode_steps = int(_get(configuration, "episodeSteps", 720) or 720)

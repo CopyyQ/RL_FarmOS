@@ -11,12 +11,20 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / "vendor"), str(ROOT / "src"), str(ROOT)]
 
-from kaggle_environments.envs.kaggriculture.kaggriculture import (
-    MAX_SHOP_INSTANCES,
-    SHOPS,
-)
+try:
+    from kaggle_environments.envs.kaggriculture.kaggriculture import (
+        MAX_SHOP_INSTANCES,
+        SHOPS,
+    )
+    SHOP_NAMES = tuple(sorted(SHOPS))
+except ModuleNotFoundError:
+    # Diagnostics must remain runnable without the full Kaggle dependency
+    # stack. These names are the same eight engine shops already consumed by
+    # the economics module; MAX_SHOP_INSTANCES is fixed by the game rules.
+    from kaggrl.v45_economics import ECON_SHOP_PRODUCTS
 
-SHOP_NAMES = tuple(sorted(SHOPS))
+    SHOP_NAMES = tuple(sorted(ECON_SHOP_PRODUCTS))
+    MAX_SHOP_INSTANCES = 8
 
 
 def multinomial_probability(counts, draws, n_types):

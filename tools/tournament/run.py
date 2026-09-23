@@ -109,6 +109,9 @@ def compact_game(row: dict[str, Any]) -> dict[str, Any]:
         "portfolio_plant_switches": int(
             portfolio.get("plant_switches", 0) or 0
         ),
+        "portfolio_animal_switches": int(
+            portfolio.get("animal_switches", 0) or 0
+        ),
         "portfolio_event_counts": event_counts,
     }
 
@@ -148,6 +151,7 @@ def summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "portfolio_applied_steps": 0,
             "portfolio_seed_switches": 0,
             "portfolio_plant_switches": 0,
+            "portfolio_animal_switches": 0,
         }
     margins = [float(row["margin"]) for row in rows]
     ordered = sorted(margins)
@@ -180,6 +184,10 @@ def summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
         ),
         "portfolio_plant_switches": sum(
             int(row.get("portfolio_plant_switches", 0) or 0)
+            for row in rows
+        ),
+        "portfolio_animal_switches": sum(
+            int(row.get("portfolio_animal_switches", 0) or 0)
             for row in rows
         ),
     }

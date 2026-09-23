@@ -467,6 +467,11 @@ def _run_chunk(args):
         "portfolio_min_undersupply_ratio",
         "portfolio_min_shop_demand",
         "portfolio_source_mode",
+        "portfolio_objective",
+        "portfolio_forced_animal",
+        "portfolio_animal_min_roi",
+        "portfolio_animal_payback_margin",
+        "portfolio_diversity_penalty",
     }
     unknown_runtime_options = sorted(
         set(runtime_options) - allowed_runtime_options

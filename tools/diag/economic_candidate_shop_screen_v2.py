@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter, defaultdict
+from copy import deepcopy
 import hashlib
 import json
 from pathlib import Path
@@ -10,7 +11,12 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / "vendor"), str(ROOT / "src"), str(ROOT)]
 
-from kaggrl.v45_economics import ANIMAL_META, CROP_META, ECON_BASE_PRICE, strategy_snapshot
+from kaggrl.v45_economics import (
+    ANIMAL_META,
+    CROP_META,
+    projected_animal_payback,
+    strategy_snapshot,
+)
 from kaggrl.v4_market_race import market_price
 from tools.diag.economic_candidate_shop_coverage import make_reference_observation
 from tools.diag.shop_space import enumerate_shop_multisets
@@ -20,36 +26,52 @@ ANIMALS = tuple(ANIMAL_META)
 PRODUCT_TO_ANIMAL = {ANIMAL_META[a]["product"]: a for a in ANIMALS}
 TARGET_CODE = {name: i for i, name in enumerate(("NONE",) + CROPS + ANIMALS)}
 
+# Supply stress is a separate deterministic axis from shop probability.
+# Each regime preserves exact shop probability mass; regimes themselves are
+# stress slices and are intentionally not assigned fake probabilities.
+SUPPLY_REGIMES = (
+    {"id": "neutral", "crop": None, "inventory_delta": 0},
+    *tuple(
+        {"id": f"realized_glut_{crop.lower()}", "crop": crop, "inventory_delta": 5000}
+        for crop in CROPS
+    ),
+)
+
+
+def _apply_supply_regime(observation, regime):
+    if not regime.get("crop"):
+        return observation
+    obs = deepcopy(observation)
+    crop = str(regime["crop"])
+    inventory = obs["market"]["inventory"]
+    prices = obs["market"]["prices"]
+    inventory[crop] = max(
+        0,
+        int(inventory.get(crop, 10000)) + int(regime["inventory_delta"]),
+    )
+    prices[crop] = int(market_price(crop, inventory[crop]))
+    return obs
+
+
+def _screen_snapshot(observation, horizon, *, cache_animal_payback):
+    snap = strategy_snapshot(
+        observation,
+        projected_crop_value=True,
+        projected_crop_horizon_extra_days=horizon,
+    )
+    if cache_animal_payback:
+        snap["_screen_animal_payback"] = {
+            animal: projected_animal_payback(snap, observation, animal)
+            for animal in ANIMALS
+        }
+    return snap
+
 
 def _animal_payback(snapshot, observation, animal):
-    ad = ANIMAL_META[animal]
-    remaining_days = float(snapshot["remaining_days"])
-    if remaining_days < float(ad["first"]) + 0.25:
-        return {"roi": 0.0, "margin": -1.0, "revenue": 0.0, "cost": float(ad["cost"])}
-    cycles = 1 + int(max(0.0, remaining_days - float(ad["first"])) // max(1.0, float(ad["interval"])))
-    product = str(ad["product"])
-    market = observation.get("market") or {}
-    inv0 = float((market.get("inventory") or {}).get(product, 10000))
-    future_sink = float(snapshot["future_sink"].get(product, 0.0))
-    frac = min(1.0, float(ad["first"]) / max(1e-6, remaining_days))
-    projected_inventory = max(0, int(round(inv0 - future_sink * frac)))
-    revenue = 0.0
-    inv = projected_inventory
-    for _ in range(cycles):
-        revenue += float(market_price(product, int(inv)))
-        inv += 1
-    wheat_price = float((market.get("prices") or {}).get("WHEAT", ECON_BASE_PRICE["WHEAT"]))
-    feed_cost = remaining_days * max(3.0, 0.25 * wheat_price)
-    total_cost = float(ad["cost"]) + feed_cost
-    roi = revenue / max(1.0, total_cost)
-    return {
-        "roi": float(roi),
-        "margin": float((revenue - total_cost) / max(1.0, total_cost)),
-        "revenue": float(revenue),
-        "cost": float(total_cost),
-        "projected_inventory": int(projected_inventory),
-        "cycles": int(cycles),
-    }
+    cached = snapshot.get("_screen_animal_payback", {}).get(str(animal))
+    if cached is not None:
+        return cached
+    return projected_animal_payback(snapshot, observation, animal)
 
 
 def _viable_crops(snapshot, options):
@@ -95,7 +117,10 @@ def _crop_target(snapshot, options, original):
     return best if new_roi >= old_roi * float(options.get("portfolio_crop_improvement_ratio", 1.0)) else original
 
 
-def _animal_target(snapshot, observation, options):
+def _animal_target(snapshot, observation, options, original, paybacks=None):
+    original = str(original)
+    if paybacks is None:
+        paybacks = {}
     forced = options.get("portfolio_forced_animal")
     min_roi = float(options.get("portfolio_animal_min_roi", 1.0))
     min_margin = float(options.get("portfolio_animal_payback_margin", 0.0))
@@ -105,27 +130,32 @@ def _animal_target(snapshot, observation, options):
             continue
         if not bool(snapshot["animal_viable"].get(animal, False)):
             continue
-        payback = _animal_payback(snapshot, observation, animal)
+        if animal not in paybacks:
+            paybacks[animal] = _animal_payback(snapshot, observation, animal)
+        payback = paybacks[animal]
         product = ANIMAL_META[animal]["product"]
         if payback["roi"] < min_roi or payback["margin"] < min_margin:
             continue
-        candidates.append((payback["roi"], float(snapshot["demand"].get(product, 0.0)), animal))
-    return max(candidates)[2] if candidates else "NONE"
-
-
-def _decision(snapshot, observation, options, original):
-    objective = str(options.get("portfolio_objective", "best_crop_roi"))
-    crop = _crop_target(snapshot, options, original)
-    if objective == "animal":
-        return _animal_target(snapshot, observation, options)
-    if objective != "hybrid":
-        return crop
-    animal = _animal_target(snapshot, observation, options)
-    if animal == "NONE":
-        return crop
-    animal_roi = _animal_payback(snapshot, observation, animal)["roi"]
-    crop_roi = float(snapshot["crop_roi"].get(crop, 0.0))
-    return animal if animal_roi > crop_roi else crop
+        candidates.append((
+            payback["roi"],
+            float(snapshot["demand"].get(product, 0.0)),
+            animal,
+        ))
+    if not candidates:
+        return original
+    best = max(candidates)[2]
+    if best == original:
+        return original
+    if not forced:
+        if original not in paybacks:
+            paybacks[original] = _animal_payback(snapshot, observation, original)
+        if best not in paybacks:
+            paybacks[best] = _animal_payback(snapshot, observation, best)
+        old = paybacks[original]
+        new = paybacks[best]
+        if float(new["roi"]) < float(old["roi"]):
+            return original
+    return best
 
 
 def main():
@@ -145,43 +175,108 @@ def main():
     for draws in range(1, 9):
         step = draws * 72
         for state in enumerate_shop_multisets(draws):
-            obs = make_reference_observation(state["shops"], step)
-            key = (draws, tuple(sorted(state["shops"].items())))
-            states.append((key, state, obs))
-            snapshots[key] = {h: strategy_snapshot(obs, projected_crop_value=True, projected_crop_horizon_extra_days=h) for h in horizon_values}
+            base_obs = make_reference_observation(state["shops"], step)
+            shop_key = (draws, tuple(sorted(state["shops"].items())))
+            for regime in SUPPLY_REGIMES:
+                obs = _apply_supply_regime(base_obs, regime)
+                key = (shop_key, str(regime["id"]))
+                states.append((key, state, obs, regime))
+                cache_animal = str(regime["id"]) == "neutral"
+                snapshots[key] = {
+                    h: _screen_snapshot(
+                        obs,
+                        h,
+                        cache_animal_payback=cache_animal,
+                    )
+                    for h in horizon_values
+                }
 
-    full_states = [(key, state, obs) for key, state, obs in states if key[0] == 8]
+    neutral_states = [
+        row for row in states if str(row[3]["id"]) == "neutral"
+    ]
+    full_states = [row for row in states if row[0][0][0] == 8]
     reports = []
     vectors = {}
     for idx, candidate in enumerate(candidates, 1):
         options = dict(candidate.get("runtime_options") or {})
         horizon = float(options.get("portfolio_horizon_extra_days", 0.0))
-        targets = Counter()
-        switch_mass = 0.0
-        animal_mass = 0.0
+        crop_targets = Counter()
+        animal_targets = Counter()
+        crop_switch_targets = Counter()
+        animal_switch_targets = Counter()
+        crop_switch_mass = 0.0
+        animal_switch_mass = 0.0
+        per_regime_crop_switch = defaultdict(float)
+        per_regime_animal_switch = defaultdict(float)
+        objective = str(options.get("portfolio_objective", "best_crop_roi"))
+        crop_enabled = objective != "animal"
+        animal_enabled = objective in ("animal", "hybrid")
+        family = str(candidate.get("family", ""))
+        stress_scope = family == "B_glut_to_scarcity"
+        candidate_states = states if stress_scope else neutral_states
+        screen_scope = "neutral_plus_glut" if stress_scope else "neutral"
         vec = bytearray()
         full_hasher = hashlib.sha256()
-        for state_index, (key, state, obs) in enumerate(states):
+        for state_index, (key, state, obs, regime) in enumerate(candidate_states):
             snap = snapshots[key][horizon]
             p = float(state["probability"])
+            regime_id = str(regime["id"])
             for original in CROPS:
-                target = original if candidate.get("baseline") else _decision(snap, obs, options, original)
-                targets[target] += p / len(CROPS)
-                switch_mass += p / len(CROPS) * float(target != original)
-                animal_mass += p / len(CROPS) * float(target in ANIMALS)
+                target = original
+                if not candidate.get("baseline") and crop_enabled:
+                    target = _crop_target(snap, options, original)
+                crop_targets[target] += p / len(CROPS)
+                switched = p / len(CROPS) * float(target != original)
+                crop_switch_mass += switched
+                per_regime_crop_switch[regime_id] += switched
+                if target != original:
+                    crop_switch_targets[target] += p / len(CROPS)
                 code = TARGET_CODE[target]
                 full_hasher.update(bytes((code,)))
-                if state_index % 16 == 0:
+                if state_index % 128 == 0:
+                    vec.append(code)
+            animal_paybacks = {}
+            for original in ANIMALS:
+                target = original
+                if not candidate.get("baseline") and animal_enabled:
+                    target = _animal_target(
+                        snap,
+                        obs,
+                        options,
+                        original,
+                        animal_paybacks,
+                    )
+                animal_targets[target] += p / len(ANIMALS)
+                switched = p / len(ANIMALS) * float(target != original)
+                animal_switch_mass += switched
+                per_regime_animal_switch[regime_id] += switched
+                if target != original:
+                    animal_switch_targets[target] += p / len(ANIMALS)
+                code = TARGET_CODE[target]
+                full_hasher.update(bytes((code,)))
+                if state_index % 128 == 0:
                     vec.append(code)
         signature = full_hasher.hexdigest()
         vectors[candidate["id"]] = bytes(vec)
+        all_targets = set(crop_targets) | set(animal_targets)
         reports.append({
             "id": candidate["id"], "family": candidate["family"], "baseline": bool(candidate.get("baseline")),
-            "signature": signature, "switch_mass_sum_over_draws": switch_mass,
-            "animal_mass_sum_over_draws": animal_mass, "targets": dict(sorted(targets.items())),
+            "signature": signature,
+            "screen_scope": screen_scope,
+            "screen_state_count": len(candidate_states),
+            "crop_switch_mass_sum_over_draws": crop_switch_mass,
+            "animal_switch_mass_sum_over_draws": animal_switch_mass,
+            "switch_mass_sum_over_draws": crop_switch_mass + animal_switch_mass,
+            "crop_targets": dict(sorted(crop_targets.items())),
+            "animal_targets": dict(sorted(animal_targets.items())),
+            "crop_switch_targets": dict(sorted(crop_switch_targets.items())),
+            "animal_switch_targets": dict(sorted(animal_switch_targets.items())),
+            "per_supply_regime_crop_switch_mass": dict(sorted(per_regime_crop_switch.items())),
+            "per_supply_regime_animal_switch_mass": dict(sorted(per_regime_animal_switch.items())),
+            "targets": sorted(all_targets),
         })
         if idx % 25 == 0 or idx == len(candidates):
-            print(f"[V2-SCREEN] {idx}/{len(candidates)} family={candidate['family']} targets={','.join(sorted(targets))}", flush=True)
+            print(f"[V2-SCREEN] {idx}/{len(candidates)} family={candidate['family']} targets={','.join(sorted(all_targets))}", flush=True)
 
     by_signature = {}
     exact_unique = []
@@ -209,14 +304,17 @@ def main():
         representative = max(
             bucket,
             key=lambda c: (
-                float(report_by_id[c["id"]]["animal_mass_sum_over_draws"]),
+                float(report_by_id[c["id"]]["animal_switch_mass_sum_over_draws"]),
                 float(report_by_id[c["id"]]["switch_mass_sum_over_draws"]),
                 c["id"],
             ),
         )
         selected.append(representative)
         bucket.remove(representative)
-    selected_vectors = [vectors[c["id"]] for c in selected]
+    selected_vectors = [
+        (report_by_id[c["id"]]["screen_scope"], vectors[c["id"]])
+        for c in selected
+    ]
     families = sorted(family_buckets)
     cursor = 0
     while len(selected) < args.max_selected and any(family_buckets.values()):
@@ -227,8 +325,11 @@ def main():
         chosen = None
         for candidate in list(family_buckets[family]):
             v = vectors[candidate["id"]]
+            candidate_scope = report_by_id[candidate["id"]]["screen_scope"]
             max_similarity = 0.0
-            for sv in selected_vectors:
+            for selected_scope, sv in selected_vectors:
+                if selected_scope != candidate_scope:
+                    continue
                 same = sum(a == b for a, b in zip(v, sv)) / max(1, len(v))
                 max_similarity = max(max_similarity, same)
                 if max_similarity >= args.near_duplicate:
@@ -241,12 +342,19 @@ def main():
             continue
         family_buckets[family].remove(chosen)
         selected.append(chosen)
-        selected_vectors.append(vectors[chosen["id"]])
+        selected_vectors.append((
+            report_by_id[chosen["id"]]["screen_scope"],
+            vectors[chosen["id"]],
+        ))
 
     selected_ids = {c["id"] for c in selected}
     family_selected = Counter(c["family"] for c in selected)
     result = {
-        "total_prefix_multisets": len(states), "full_8shop_multisets": len(full_states),
+        "shop_prefix_multisets": len(states) // len(SUPPLY_REGIMES),
+        "supply_regime_count": len(SUPPLY_REGIMES),
+        "supply_regimes": list(SUPPLY_REGIMES),
+        "total_state_regimes": len(states),
+        "full_8shop_state_regimes": len(full_states),
         "raw_candidate_count": len(candidates), "exact_unique_count": len(exact_unique),
         "selected_count": len(selected), "near_duplicate_similarity": args.near_duplicate,
         "selected_family_counts": dict(sorted(family_selected.items())), "reports": reports,
@@ -254,10 +362,16 @@ def main():
     out = Path(args.output); out.parent.mkdir(parents=True, exist_ok=True); out.write_text(json.dumps(result, indent=2), encoding="utf-8")
     selected_payload = dict(payload)
     selected_payload["schema"] = "farmos_candidate_manifest_v2_screened"
-    selected_payload["screen"] = {k: result[k] for k in ("total_prefix_multisets", "raw_candidate_count", "exact_unique_count", "selected_count", "near_duplicate_similarity", "selected_family_counts")}
+    selected_payload["screen"] = {k: result[k] for k in ("shop_prefix_multisets", "supply_regime_count", "total_state_regimes", "raw_candidate_count", "exact_unique_count", "selected_count", "near_duplicate_similarity", "selected_family_counts")}
     selected_payload["candidates"] = [c for c in candidates if c["id"] in selected_ids]
     Path(args.selected).write_text(json.dumps(selected_payload, indent=2), encoding="utf-8")
-    print(f"[V2-SCREEN-DONE] states={len(states)} raw={len(candidates)} exact_unique={len(exact_unique)} selected={len(selected)} families={dict(family_selected)}", flush=True)
+    print(
+        f"[V2-SCREEN-DONE] shop_states={len(states) // len(SUPPLY_REGIMES)} "
+        f"supply_regimes={len(SUPPLY_REGIMES)} state_regimes={len(states)} "
+        f"raw={len(candidates)} exact_unique={len(exact_unique)} "
+        f"selected={len(selected)} families={dict(family_selected)}",
+        flush=True,
+    )
 
 
 if __name__ == "__main__":

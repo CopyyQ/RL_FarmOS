@@ -38,6 +38,11 @@ class V45SkillRuntime:
         portfolio_min_undersupply_ratio=0.0,
         portfolio_min_shop_demand=1.0,
         portfolio_source_mode="any",
+        portfolio_objective="best_crop_roi",
+        portfolio_forced_animal=None,
+        portfolio_animal_min_roi=1.0,
+        portfolio_animal_payback_margin=0.0,
+        portfolio_diversity_penalty=0.20,
         **kwargs,
     ):
         self.base = ContinuousRuntime(parent_path, snapshot_path, **kwargs)
@@ -70,6 +75,20 @@ class V45SkillRuntime:
             0.0, float(portfolio_min_shop_demand)
         )
         self.portfolio_source_mode = str(portfolio_source_mode)
+        self.portfolio_objective = str(portfolio_objective)
+        self.portfolio_forced_animal = (
+            None if portfolio_forced_animal is None
+            else str(portfolio_forced_animal)
+        )
+        self.portfolio_animal_min_roi = max(
+            0.0, float(portfolio_animal_min_roi)
+        )
+        self.portfolio_animal_payback_margin = float(
+            portfolio_animal_payback_margin
+        )
+        self.portfolio_diversity_penalty = max(
+            0.0, float(portfolio_diversity_penalty)
+        )
         self.skill_records = []
         self.skill_teacher_records = []
         self.skill_exec_trace = []
@@ -92,6 +111,7 @@ class V45SkillRuntime:
             "applied_steps": 0,
             "plant_switches": 0,
             "seed_switches": 0,
+            "animal_switches": 0,
         }
         self.portfolio_switch_events = []
 
@@ -139,6 +159,7 @@ class V45SkillRuntime:
             "applied_steps": 0,
             "plant_switches": 0,
             "seed_switches": 0,
+            "animal_switches": 0,
         }
         self.portfolio_switch_events = []
 
@@ -383,10 +404,15 @@ class V45SkillRuntime:
                 min_undersupply_ratio=self.portfolio_min_undersupply_ratio,
                 min_shop_demand=self.portfolio_min_shop_demand,
                 source_mode=self.portfolio_source_mode,
+                objective=self.portfolio_objective,
+                forced_animal=self.portfolio_forced_animal,
+                animal_min_roi=self.portfolio_animal_min_roi,
+                animal_payback_margin=self.portfolio_animal_payback_margin,
+                diversity_penalty=self.portfolio_diversity_penalty,
             )
             if bool(portfolio_switch.get("applied", False)):
                 self.portfolio_switch_stats["applied_steps"] += 1
-            for key in ("plant_switches", "seed_switches"):
+            for key in ("plant_switches", "seed_switches", "animal_switches"):
                 self.portfolio_switch_stats[key] += int(
                     portfolio_switch.get(key, 0) or 0
                 )

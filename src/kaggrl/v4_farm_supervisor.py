@@ -6,6 +6,7 @@ from typing import Any
 from kaggrl.v45_economics import (
     strategy_snapshot,
     projected_farm_output,
+    projected_animal_payback,
     CROP_META,
     ANIMAL_META,
     ECON_BASE_PRICE,
@@ -1151,6 +1152,11 @@ def apply_portfolio_switch_overlay(
     min_undersupply_ratio=0.0,
     min_shop_demand=1.0,
     source_mode="any",
+    objective="best_crop_roi",
+    forced_animal=None,
+    animal_min_roi=1.0,
+    animal_payback_margin=0.0,
+    diversity_penalty=0.20,
 ):
     """Rewrite existing seed/plant targets using forward market economics.
 
@@ -1184,11 +1190,15 @@ def apply_portfolio_switch_overlay(
     # contains an investment target the overlay is allowed to rewrite.
     # This is semantically exact because the overlay never adds action slots.
     source_mode = str(source_mode)
+    objective = str(objective)
+    crop_enabled = objective != "animal"
+    animal_enabled = objective in ("animal", "hybrid")
     action_map = action if isinstance(action, dict) else {}
     switchable = False
     for order in list(action_map.get("market") or []):
         if (
-            isinstance(order, (list, tuple))
+            crop_enabled
+            and isinstance(order, (list, tuple))
             and len(order) >= 2
             and str(order[0]) == "BUY_SEED"
             and str(order[1]) in CROP_META
@@ -1199,7 +1209,16 @@ def apply_portfolio_switch_overlay(
         ):
             switchable = True
             break
-    if not switchable:
+        if (
+            animal_enabled
+            and isinstance(order, (list, tuple))
+            and len(order) >= 2
+            and str(order[0]) == "BUY_ANIMAL"
+            and str(order[1]) in ANIMAL_META
+        ):
+            switchable = True
+            break
+    if not switchable and crop_enabled:
         commands = [action_map.get("farmer")]
         commands.extend(list(action_map.get("hands") or []))
         for command in commands:
@@ -1289,6 +1308,7 @@ def apply_portfolio_switch_overlay(
         "shops": list(shops),
         "seed_switches": 0,
         "plant_switches": 0,
+        "animal_switches": 0,
         "feed_need": float(feed_need),
         "feed_available": float(feed_available),
         "feed_surplus": float(feed_surplus),
@@ -1309,6 +1329,10 @@ def apply_portfolio_switch_overlay(
         mode = str(source_mode)
         if mode == "wheat":
             return original == "WHEAT"
+        if mode == "glutted":
+            return float(
+                snap["crop_projected_inventory"].get(original, 10000.0)
+            ) > 10000.0
         if mode == "nonbest":
             if not viable:
                 return False
@@ -1317,6 +1341,8 @@ def apply_portfolio_switch_overlay(
                 key=lambda c: float(snap["crop_roi"].get(c, 0.0)),
             )
             return original != best
+        if mode == "none":
+            return False
         return True
 
     def choose(original, available_seed=None):
@@ -1342,15 +1368,35 @@ def apply_portfolio_switch_overlay(
         if not candidates:
             return original
 
-        best = max(
-            candidates,
-            key=lambda c: (
+        if objective == "scarcity_crop":
+            key = lambda c: (
+                float(snap["crop_undersupply_ratio"].get(c, 0.0)),
+                float(snap["crop_roi"].get(c, 0.0)),
+                c,
+            )
+        elif objective == "diversified_crop":
+            penalty = max(0.0, float(diversity_penalty))
+            key = lambda c: (
+                float(snap["crop_roi"].get(c, 0.0))
+                / (1.0 + penalty * float(snap["demand"].get(c, 0.0))),
+                float(snap["crop_undersupply_ratio"].get(c, 0.0)),
+                c,
+            )
+        elif objective == "shop_specialist":
+            key = lambda c: (
+                float(snap["demand"].get(c, 0.0)),
+                float(snap["crop_projected_price"].get(c, 0.0)),
+                float(snap["crop_roi"].get(c, 0.0)),
+                c,
+            )
+        else:
+            key = lambda c: (
                 float(snap["crop_roi"].get(c, 0.0)),
                 float(snap["crop_projected_price"].get(c, 0.0)),
                 -float(CROP_META[c]["first"]),
                 c,
-            ),
-        )
+            )
+        best = max(candidates, key=key)
         old_roi = max(
             1e-6, float(snap["crop_roi"].get(original, 0.0))
         )
@@ -1359,9 +1405,69 @@ def apply_portfolio_switch_overlay(
             return original
         return best
 
+    def choose_animal(original):
+        original = str(original)
+        if original not in ANIMAL_META or not animal_enabled:
+            return original
+        candidates = []
+        for animal in ANIMAL_META:
+            if forced_animal and animal != str(forced_animal):
+                continue
+            if not bool(snap["animal_viable"].get(animal, False)):
+                continue
+            payback = projected_animal_payback(snap, observation, animal)
+            if float(payback.get("roi", 0.0)) < float(animal_min_roi):
+                continue
+            if float(payback.get("margin", -1.0)) < float(animal_payback_margin):
+                continue
+            product = ANIMAL_META[animal]["product"]
+            candidates.append((
+                float(payback.get("roi", 0.0)),
+                float(snap["demand"].get(product, 0.0)),
+                animal,
+                payback,
+            ))
+        if not candidates:
+            return original
+        _, _, best, best_payback = max(candidates)
+        if best == original:
+            return original
+        if not forced_animal:
+            old_payback = projected_animal_payback(snap, observation, original)
+            if float(best_payback.get("roi", 0.0)) < float(old_payback.get("roi", 0.0)):
+                return original
+        return best
+
     for index, order in enumerate(list(out["market"])):
         if (
-            not order
+            order
+            and len(order) >= 3
+            and str(order[0]) == "BUY_ANIMAL"
+            and str(order[1]) in ANIMAL_META
+            and animal_enabled
+        ):
+            original_animal = str(order[1])
+            replacement_animal = choose_animal(original_animal)
+            if replacement_animal != original_animal:
+                new_order = list(order)
+                new_order[1] = replacement_animal
+                out["market"][index] = new_order
+                meta["animal_switches"] += 1
+                meta["applied"] = True
+                payback = projected_animal_payback(
+                    snap, observation, replacement_animal
+                )
+                meta["events"].append({
+                    "kind": "switch_animal",
+                    "from": original_animal,
+                    "to": replacement_animal,
+                    "roi": float(payback.get("roi", 0.0)),
+                    "margin": float(payback.get("margin", -1.0)),
+                })
+            continue
+        if (
+            not crop_enabled
+            or not order
             or str(order[0]) != "BUY_SEED"
             or len(order) < 3
         ):
