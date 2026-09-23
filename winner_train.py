@@ -67,6 +67,234 @@ ALLOWED_MARKETS = (
     "FRONT_RUN_9",
 )
 
+CATASTROPHIC_MARGIN = int(
+    os.environ.get("FARMOS_CATASTROPHIC_MARGIN", "-30000")
+)
+
+
+def _percentile_linear(values, quantile: float) -> float:
+    xs = sorted(float(x) for x in values)
+    if not xs:
+        return 0.0
+    q = max(0.0, min(1.0, float(quantile)))
+    pos = (len(xs) - 1) * q
+    lo = int(math.floor(pos))
+    hi = int(math.ceil(pos))
+    if lo == hi:
+        return xs[lo]
+    frac = pos - lo
+    return xs[lo] * (1.0 - frac) + xs[hi] * frac
+
+
+def tail_margin_stats(margins, catastrophic_margin=None):
+    values = [float(x) for x in margins]
+    if not values:
+        return {
+            "p10_margin": 0.0,
+            "cvar10_margin": 0.0,
+            "catastrophic_count": 0,
+            "catastrophic_rate": 0.0,
+            "below_20k": 0,
+            "below_30k": 0,
+            "below_50k": 0,
+        }
+    threshold = (
+        float(CATASTROPHIC_MARGIN)
+        if catastrophic_margin is None
+        else float(catastrophic_margin)
+    )
+    ordered = sorted(values)
+    tail_n = max(1, int(math.ceil(0.10 * len(ordered))))
+    catastrophic_count = sum(x <= threshold for x in ordered)
+    return {
+        "p10_margin": _percentile_linear(ordered, 0.10),
+        "cvar10_margin": statistics.fmean(ordered[:tail_n]),
+        "catastrophic_count": catastrophic_count,
+        "catastrophic_rate": catastrophic_count / len(ordered),
+        "below_20k": sum(x <= -20000.0 for x in ordered),
+        "below_30k": sum(x <= -30000.0 for x in ordered),
+        "below_50k": sum(x <= -50000.0 for x in ordered),
+    }
+
+
+def _trace_get(obj, key, default=None):
+    if isinstance(obj, dict):
+        return obj.get(key, default)
+    return getattr(obj, key, default)
+
+
+def _trace_mapping_total(value) -> int:
+    try:
+        mapping = dict(value or {})
+    except Exception:
+        return 0
+    total = 0
+    for amount in mapping.values():
+        try:
+            total += max(0, int(amount or 0))
+        except Exception:
+            pass
+    return total
+
+
+def _trace_farm_snapshot(farm):
+    private = _trace_get(farm, "private", {}) or {}
+    shed = _trace_get(private, "shed", {}) or {}
+    seeds = _trace_get(private, "seeds", {}) or {}
+    hands = list(_trace_get(farm, "hands", []) or [])
+    tiles = list(_trace_get(farm, "tiles", []) or [])
+    plants = animals = weeds = structures = 0
+    for row in tiles:
+        for tile in list(row or []):
+            if not isinstance(tile, dict):
+                continue
+            kind = str(tile.get("kind", "") or "")
+            plants += int(kind == "PLANT")
+            weeds += int(kind == "WEED")
+            structures += int(kind in {"COOP", "PASTURE"})
+            animals += int(bool(tile.get("animal")))
+    return {
+        "money": int(_trace_get(farm, "money", 0) or 0),
+        "hands": len(hands),
+        "hires_today": int(_trace_get(farm, "hires_today", 0) or 0),
+        "shed_total": _trace_mapping_total(shed),
+        "seed_total": _trace_mapping_total(seeds),
+        "plants": plants,
+        "animals": animals,
+        "weeds": weeds,
+        "structures": structures,
+    }
+
+
+def _trace_action_summary(action):
+    action = action if isinstance(action, dict) else {}
+    market_counts = {}
+    market_rows = []
+    for order in list(action.get("market", []) or []):
+        if not order:
+            continue
+        op = str(order[0])
+        item = str(order[1]) if len(order) > 1 else ""
+        try:
+            quantity = int(order[2]) if len(order) > 2 else 1
+        except Exception:
+            quantity = 1
+        market_counts[op] = market_counts.get(op, 0) + 1
+        market_rows.append(
+            {"op": op, "item": item, "quantity": quantity}
+        )
+    unit_counts = {}
+    commands = [action.get("farmer")]
+    commands.extend(list(action.get("hands", []) or []))
+    for command in commands:
+        if not command:
+            continue
+        op = str(command[0])
+        unit_counts[op] = unit_counts.get(op, 0) + 1
+    return {
+        "market": market_rows,
+        "market_counts": market_counts,
+        "unit_counts": unit_counts,
+    }
+
+
+def build_catastrophic_trace(env_steps, seat, macro_records):
+    macro_by_step = {
+        int(row.get("step", -1)): row for row in (macro_records or [])
+    }
+    active_macro = None
+    trace = []
+    for step in range(max(0, len(env_steps) - 1)):
+        if step in macro_by_step:
+            active_macro = macro_by_step[step]
+        before_obs = env_steps[step][seat].observation
+        after_obs = env_steps[step + 1][seat].observation
+        before_farms = list(_trace_get(before_obs, "farms", []) or [])
+        after_farms = list(_trace_get(after_obs, "farms", []) or [])
+        if len(before_farms) < 2 or len(after_farms) < 2:
+            continue
+        own_before = _trace_farm_snapshot(before_farms[seat])
+        own_after = _trace_farm_snapshot(after_farms[seat])
+        rival_after = _trace_farm_snapshot(after_farms[1 - seat])
+        action = getattr(env_steps[step + 1][seat], "action", None) or {}
+        action_summary = _trace_action_summary(action)
+        try:
+            _, transition = farm_transition_reward(
+                before_obs, after_obs, action, seat
+            )
+        except Exception:
+            transition = {}
+        macro = active_macro or {}
+        trace.append(
+            {
+                "step": int(step),
+                "day": int(step // 24),
+                "own_money": own_after["money"],
+                "rival_money": rival_after["money"],
+                "margin": own_after["money"] - rival_after["money"],
+                "own_money_delta": own_after["money"] - own_before["money"],
+                "hands": own_after["hands"],
+                "hires_today": own_after["hires_today"],
+                "shed_total": own_after["shed_total"],
+                "seed_total": own_after["seed_total"],
+                "plants": own_after["plants"],
+                "animals": own_after["animals"],
+                "weeds": own_after["weeds"],
+                "structures": own_after["structures"],
+                "route_action": int(macro.get("route_action", -1)),
+                "base_route_class": int(macro.get("base_route_class", -1)),
+                "market_mode": str(macro.get("market_mode", "KEEP_ROUTE")),
+                "horizon": int(macro.get("horizon", 1)),
+                "shop_replan": bool(macro.get("shop_replan", False)),
+                "market_orders": action_summary["market"],
+                "market_counts": action_summary["market_counts"],
+                "unit_counts": action_summary["unit_counts"],
+                "plant_deaths": int(transition.get("plant_deaths", 0)),
+                "animal_escapes": int(transition.get("animal_escapes", 0)),
+                "watered": int(transition.get("watered", 0)),
+                "fed": int(transition.get("fed", 0)),
+                "cared": int(transition.get("cared", 0)),
+                "harvested_units": int(transition.get("harvested_units", 0)),
+                "sold_units": int(transition.get("sold_units", 0)),
+                "critical_water_opportunities": int(
+                    transition.get("critical_water_opportunities", 0)
+                ),
+                "water_success_actions": int(
+                    transition.get("water_success_actions", 0)
+                ),
+                "invalid_ops": int(transition.get("invalid_ops", 0)),
+            }
+        )
+    return trace
+
+
+def save_catastrophic_cases(out_dir, iteration, phase, rows):
+    cases = [
+        row for row in rows
+        if float(row.get("margin", 0)) <= float(CATASTROPHIC_MARGIN)
+        and row.get("catastrophic_trace")
+    ]
+    if not cases:
+        return None
+    target_dir = Path(out_dir) / "catastrophes"
+    target_dir.mkdir(parents=True, exist_ok=True)
+    target = target_dir / f"iter_{int(iteration):05d}_{phase}.jsonl"
+    with target.open("w", encoding="utf-8") as handle:
+        for row in cases:
+            payload = {
+                "iteration": int(iteration),
+                "phase": str(phase),
+                "seed": int(row["seed"]),
+                "seat": int(row["seat"]),
+                "own_money": int(row["own_money"]),
+                "v51_money": int(row["v51_money"]),
+                "margin": int(row["margin"]),
+                "dense_stats": dict(row.get("dense_stats") or {}),
+                "trace": list(row.get("catastrophic_trace") or []),
+            }
+            handle.write(json.dumps(payload, separators=(",", ":")) + "\n")
+    return target
+
 
 def parse_seed_range(text: str):
     if ":" in text:
@@ -265,6 +493,11 @@ def _run_chunk(args):
         micro_records = attach_micro_rewards(
             env.steps, seat, runtime.micro_records, terminal
         )
+        catastrophic_trace = (
+            build_catastrophic_trace(env.steps, seat, runtime.records)
+            if margin <= CATASTROPHIC_MARGIN
+            else []
+        )
         out.append(
             {
                 "seed": int(seed),
@@ -286,6 +519,7 @@ def _run_chunk(args):
                 "skill_stats": dict(
                     getattr(runtime, "skill_stats", {}) or {}
                 ),
+                "catastrophic_trace": catastrophic_trace,
             }
         )
     return out
@@ -459,6 +693,7 @@ def metrics(rows):
     own = [x["own_money"] for x in rows]
     rival = [x["v51_money"] for x in rows]
     wins = sum(x["win"] for x in rows)
+    tail = tail_margin_stats(margins)
     return {
         "games": len(rows),
         "wins": wins,
@@ -469,6 +704,7 @@ def metrics(rows):
         "median_margin": statistics.median(margins),
         "min_margin": min(margins),
         "max_margin": max(margins),
+        **tail,
         "mean_reward": statistics.fmean(x["reward"] for x in rows),
         "decisions": sum(len(x["records"]) for x in rows),
         "shop_replans": sum(
@@ -572,6 +808,20 @@ def print_metrics(tag, iteration, m, best=None, elapsed=None):
         f"margin={m['mean_margin']:+10.1f} median={m['median_margin']:+9.1f} "
         f"range=[{m['min_margin']:+d},{m['max_margin']:+d}] "
         f"decisions={m['decisions']:4d} replans={m.get('shop_replans', 0):3d}{extra}",
+        flush=True,
+    )
+
+
+def print_tail_metrics(tag, iteration, m):
+    print(
+        f"[TAIL-{tag.strip()}] iter={iteration:05d} "
+        f"p10={m['p10_margin']:+.1f} "
+        f"cvar10={m['cvar10_margin']:+.1f} "
+        f"worst={m['min_margin']:+d} "
+        f"below20k={m['below_20k']}/{m['games']} "
+        f"below30k={m['below_30k']}/{m['games']} "
+        f"below50k={m['below_50k']}/{m['games']} "
+        f"cat_rate={100.0*m['catastrophic_rate']:.1f}%",
         flush=True,
     )
 
@@ -2491,12 +2741,30 @@ def micro_ppo_update(
 
 def append_csv(path: Path, row: dict):
     path.parent.mkdir(parents=True, exist_ok=True)
-    exists = path.exists()
-    with path.open("a", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=list(row.keys()))
+    fields = list(row.keys())
+    if path.exists() and path.stat().st_size > 0:
+        with path.open("r", newline="", encoding="utf-8") as handle:
+            reader = csv.DictReader(handle)
+            old_fields = list(reader.fieldnames or [])
+            if old_fields != fields:
+                old_rows = list(reader)
+                merged = old_fields + [x for x in fields if x not in old_fields]
+                tmp = path.with_suffix(path.suffix + ".schema_tmp")
+                with tmp.open("w", newline="", encoding="utf-8") as out:
+                    writer = csv.DictWriter(out, fieldnames=merged)
+                    writer.writeheader()
+                    for old_row in old_rows:
+                        writer.writerow(old_row)
+                tmp.replace(path)
+                fields = merged
+            else:
+                fields = old_fields
+    exists = path.exists() and path.stat().st_size > 0
+    with path.open("a", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fields)
         if not exists:
             writer.writeheader()
-        writer.writerow(row)
+        writer.writerow({key: row.get(key, "") for key in fields})
 
 
 def save_state(
@@ -3451,6 +3719,10 @@ def main():
                 best=best_margin if math.isfinite(best_margin) else None,
                 elapsed=time.time() - t0,
             )
+            print_tail_metrics("TRAIN", iteration, train_m)
+            save_catastrophic_cases(
+                out_dir, iteration, "train", rows
+            )
             econ_s = economic_rollout_summary(rows)
             if econ_s is not None:
                 print(
@@ -3950,6 +4222,10 @@ def main():
                 )
                 eval_m = metrics(eval_rows)
                 evaluated = True
+                print_tail_metrics("EVAL", iteration, eval_m)
+                save_catastrophic_cases(
+                    out_dir, iteration, "eval", eval_rows
+                )
                 skill_active_ratio = (
                     eval_m["skill_executed_sampled"]
                     / max(1, eval_m["skill_nonkeep_proposals"])
@@ -4263,6 +4539,13 @@ def main():
                 "train_median_margin": train_m["median_margin"],
                 "train_max_margin": train_m["max_margin"],
                 "train_min_margin": train_m["min_margin"],
+                "train_p10_margin": train_m["p10_margin"],
+                "train_cvar10_margin": train_m["cvar10_margin"],
+                "train_catastrophic_count": train_m["catastrophic_count"],
+                "train_catastrophic_rate": train_m["catastrophic_rate"],
+                "train_below_20k": train_m["below_20k"],
+                "train_below_30k": train_m["below_30k"],
+                "train_below_50k": train_m["below_50k"],
                 "train_decisions": train_m["decisions"],
                 "policy_loss": ppo["policy_loss"],
                 "value_loss": ppo["value_loss"],
@@ -4296,6 +4579,27 @@ def main():
                 ),
                 "eval_mean_margin": (
                     eval_m["mean_margin"] if evaluated else ""
+                ),
+                "eval_p10_margin": (
+                    eval_m["p10_margin"] if evaluated else ""
+                ),
+                "eval_cvar10_margin": (
+                    eval_m["cvar10_margin"] if evaluated else ""
+                ),
+                "eval_catastrophic_count": (
+                    eval_m["catastrophic_count"] if evaluated else ""
+                ),
+                "eval_catastrophic_rate": (
+                    eval_m["catastrophic_rate"] if evaluated else ""
+                ),
+                "eval_below_20k": (
+                    eval_m["below_20k"] if evaluated else ""
+                ),
+                "eval_below_30k": (
+                    eval_m["below_30k"] if evaluated else ""
+                ),
+                "eval_below_50k": (
+                    eval_m["below_50k"] if evaluated else ""
                 ),
                 "best_win_rate": best_win_rate,
                 "best_mean_margin": best_margin,
