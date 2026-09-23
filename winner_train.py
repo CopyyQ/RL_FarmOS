@@ -299,6 +299,90 @@ def chunks(items, n):
     return [x for x in result if x]
 
 
+class ResilientPool:
+    """Persistent spawn pool with timeout-based worker recovery."""
+
+    def __init__(
+        self,
+        ctx,
+        *,
+        processes,
+        maxtasksperchild=None,
+        timeout_seconds=180.0,
+        recovery_retries=1,
+    ):
+        self.ctx = ctx
+        self.processes = int(processes)
+        self.maxtasksperchild = maxtasksperchild
+        self.timeout_seconds = max(1.0, float(timeout_seconds))
+        self.recovery_retries = max(0, int(recovery_retries))
+        self.pool = self._new_pool()
+
+    def _new_pool(self):
+        return self.ctx.Pool(
+            processes=self.processes,
+            maxtasksperchild=self.maxtasksperchild,
+        )
+
+    def _stop_pool(self):
+        pool, self.pool = self.pool, None
+        if pool is None:
+            return
+        try:
+            pool.terminate()
+        except Exception:
+            pass
+        try:
+            pool.join()
+        except Exception:
+            pass
+
+    def _restart(self):
+        self._stop_pool()
+        self.pool = self._new_pool()
+
+    def map(self, fn, tasks):
+        attempt = 0
+        while True:
+            try:
+                if self.pool is None:
+                    self.pool = self._new_pool()
+                result = self.pool.map_async(fn, tasks)
+                return result.get(timeout=self.timeout_seconds)
+            except (
+                mp.TimeoutError,
+                BrokenPipeError,
+                EOFError,
+                OSError,
+                ValueError,
+            ) as exc:
+                if attempt >= self.recovery_retries:
+                    print(
+                        f"[POOL-FAIL] attempts={attempt + 1} "
+                        f"reason={type(exc).__name__}: {exc}",
+                        flush=True,
+                    )
+                    self._stop_pool()
+                    raise
+                attempt += 1
+                print(
+                    f"[POOL-RECOVER] attempt={attempt}/"
+                    f"{self.recovery_retries} "
+                    f"reason={type(exc).__name__}: {exc}",
+                    flush=True,
+                )
+                self._restart()
+
+    def terminate(self):
+        if self.pool is not None:
+            self.pool.terminate()
+
+    def join(self):
+        if self.pool is not None:
+            self.pool.join()
+            self.pool = None
+
+
 def exact_games(
     parent_path,
     snapshot_path,
@@ -2455,6 +2539,8 @@ def main():
     ap.add_argument("--workers", type=int, default=max(2, min(32, (os.cpu_count() or 8) // 2)))
     ap.add_argument("--train-seeds-per-iter", type=int, default=max(2, min(32, (os.cpu_count() or 8) // 2)))
     ap.add_argument("--worker-recycle-tasks", type=int, default=64)
+    ap.add_argument("--rollout-timeout-seconds", type=float, default=180.0)
+    ap.add_argument("--rollout-recovery-retries", type=int, default=1)
     ap.add_argument("--seed-base", type=int, default=23200000)
     ap.add_argument("--eval-seeds", default="22990000:4")
     ap.add_argument("--eval-every", type=int, default=10)
@@ -2921,13 +3007,16 @@ def main():
     rollout_pool = None
     if args.workers > 1:
         ctx = mp.get_context("spawn")
-        rollout_pool = ctx.Pool(
+        rollout_pool = ResilientPool(
+            ctx,
             processes=args.workers,
             maxtasksperchild=(
                 args.worker_recycle_tasks
                 if args.worker_recycle_tasks > 0
                 else None
             ),
+            timeout_seconds=args.rollout_timeout_seconds,
+            recovery_retries=args.rollout_recovery_retries,
         )
 
     print(
@@ -2938,6 +3027,8 @@ def main():
         f"PARALLEL rollout_workers={args.workers} "
         f"train_games_per_iter={args.train_seeds_per_iter} "
         f"worker_recycle_tasks={args.worker_recycle_tasks} "
+        f"rollout_timeout={args.rollout_timeout_seconds:.0f}s "
+        f"recovery_retries={args.rollout_recovery_retries} "
         f"logical_cpus={os.cpu_count()}",
         flush=True,
     )
