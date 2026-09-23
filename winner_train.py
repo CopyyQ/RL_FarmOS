@@ -45,6 +45,7 @@ from continuous_runtime import (
     load_parent,
 )
 from kaggrl.v4_options import MARKET_MODES
+from kaggrl.economic_value import economic_value_snapshot
 from kaggrl.v4_farm_supervisor import (
     farm_transition_reward,
     MICRO_TASKS,
@@ -225,6 +226,15 @@ def build_catastrophic_trace(env_steps, seat, macro_records):
         except Exception:
             transition = {}
         macro = active_macro or {}
+        economic = None
+        if step == 0 or step % 24 == 0 or step in macro_by_step:
+            try:
+                economic = economic_value_snapshot(
+                    after_obs,
+                    horizon_steps=min(72, max(0, 718 - step)),
+                )
+            except Exception:
+                economic = None
         trace.append(
             {
                 "step": int(step),
@@ -263,6 +273,7 @@ def build_catastrophic_trace(env_steps, seat, macro_records):
                     transition.get("water_success_actions", 0)
                 ),
                 "invalid_ops": int(transition.get("invalid_ops", 0)),
+                "economic": economic,
             }
         )
     return trace
