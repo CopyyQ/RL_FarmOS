@@ -1,70 +1,84 @@
-# farmosv1
+# FarmOS V1
 
-Clean maintenance snapshot of the FarmOS / Kaggriculture reinforcement-learning agent.
+Bản mã nguồn bảo trì gọn của agent FarmOS/Kaggriculture hiện tại.
 
-## Current stack
+## Cấu trúc
 
-- Macro policy with PPO for strategic route decisions.
-- Winner / elite behavior cloning for route, market and horizon heads.
-- State-aware micro-skill policy for care and farm operations.
-- Two-stage ACT/KEEP gate before the conditional skill head.
-- Skill curriculum currently designed around the 720 -> 696 -> 672 cutover sequence.
-- Safety rollback based on margin, plant deaths and animal escapes.
+```text
+farmosv1/
+├── assets/                         # parent model, ACT/KEEP gate, v51 reference
+├── rollout/                        # hybrid rollout agent
+├── src/kaggrl/                     # core V4.6 policy/game logic
+├── tools/
+│   ├── bench/                      # A/B benchmark quan trọng
+│   └── diag/                       # chẩn đoán skill/ACT-KEEP
+├── tests/                          # regression checks
+├── vendor/                         # Kaggriculture engine cố định
+├── continuous_runtime.py           # actor/runtime
+├── v45_skill_runtime.py            # skill takeover runtime
+├── v45_skill_runtime_actkeep.py    # ACT/KEEP gated runtime
+├── winner_train.py                 # trainer chính
+└── train.sh                        # launcher
+```
 
-## Repository layout
+Không lưu trong Git: `runs/`, `output/`, `backups/`, dataset, log, virtualenv và checkpoint train lớn.
 
-- `src/kaggrl/`: core policy, observation, training and FarmOS logic.
-- `rollout/`: hybrid rollout agent.
-- `vendor/`: vendored Kaggle environment pieces required by the current runtime.
-- `assets/`: small runtime assets required by the maintained configuration.
-- `winner_train.py`: main training entry point.
-- `continuous_runtime.py`: actor/runtime implementation.
-- `v45_skill_runtime.py`: learned skill takeover runtime.
-- `v45_skill_runtime_actkeep.py`: ACT/KEEP gated runtime.
-- `train_v4_6_econ_shadow.sh`: maintained training launcher.
-- `diag_*.py`, `bench_*.py`, `check_*.py`: diagnostics and regression tools.
+## Môi trường
 
-Generated runs, logs, large checkpoints, backups and imported V3 training artifacts are intentionally not versioned.
-
-## Environment
-
-Python 3.11 is recommended. Install the PyTorch build appropriate for the target CUDA/CPU environment first, then:
+Khuyến nghị Python 3.11. Cài PyTorch phù hợp CUDA/CPU trước, sau đó:
 
 ```bash
 python -m pip install -r requirements.txt
 ```
 
-The current workstation training path uses CUDA, while Kaggle submission/runtime validation must remain CPU-compatible.
-
-## Training
-
-Use a dedicated environment and point the launcher at its Python executable:
+## Train
 
 ```bash
-FARMOS_PYTHON=/path/to/python ./train_v4_6_econ_shadow.sh
+FARMOS_PYTHON=/path/to/python ./train.sh
 ```
 
-Optional overrides:
+Biến môi trường thường dùng:
 
 ```bash
-FARMOS_RUN_DIR=/path/to/run \
-FARMOS_ACT_KEEP_THRESHOLD=0.50 \
-FARMOS_FREEZE_MICRO_REP=1 \
-FARMOS_PYTHON=/path/to/python \
-./train_v4_6_econ_shadow.sh
+FARMOS_RUN_DIR=/path/to/run
+FARMOS_ACT_KEEP_GATE_PATH=/path/to/gate.pt
+FARMOS_ACT_KEEP_THRESHOLD=0.50
+FARMOS_FREEZE_MICRO_REP=1
 ```
 
-The launcher uses `assets/act_keep_gate_sweep_best.pt` by default.
-
-## Live logs
+## Xem log
 
 ```bash
 tail -n 100 -f runs/v46_econ_shadow/train_v4_6_econ_shadow.log \
-  | grep --line-buffered -E '\[TRAIN\]|\[EVAL \]|\[PPO\]|\[MICRO\]|\[SKILL-VAL\]|\[SKILL\]|\[SKILL-STAGE-SAFE\]|\[SKILL-ROLLBACK\]|\[WINNER-BC\]'
+  | grep --line-buffered -E '\[TRAIN\]|\[EVAL \]|\[PPO\]|\[MICRO\]|\[SKILL\]|\[SKILL-VAL\]|\[SKILL-STAGE-SAFE\]|\[SKILL-ROLLBACK\]|\[WINNER-BC\]'
 ```
 
-## Maintenance rules
+## Benchmark
 
-Do not commit `runs/`, `output/`, large checkpoints, local datasets, credentials or environment folders. Keep new behavior behind deterministic diagnostics/A-B tests before promoting it into the maintained runtime.
+Các benchmark cần checkpoint train bên ngoài Git:
 
-See `MAINTENANCE.md` for the current source-cleaning and release workflow.
+```bash
+export FARMOS_CHECKPOINT=/path/to/winner_v45_skill_stage_safe.pt
+python tools/bench/cutover.py
+python tools/bench/act_keep.py
+```
+
+## Diagnostic
+
+```bash
+export FARMOS_CHECKPOINT=/path/to/winner_v45_skill_stage_safe.pt
+python tools/diag/skill_val.py
+python tools/diag/skill_exec.py
+python tools/diag/act_keep_gate.py
+python tools/diag/act_keep_sweep.py
+```
+
+## Regression
+
+```bash
+export FARMOS_CHECKPOINT=/path/to/winner_v45_skill_stage_safe.pt
+python tests/test_action_alignment.py
+python tests/test_determinism.py
+```
+
+Quy trình bảo trì chi tiết nằm trong [MAINTENANCE.md](MAINTENANCE.md).

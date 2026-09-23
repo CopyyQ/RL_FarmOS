@@ -1,48 +1,39 @@
 # Python
 __pycache__/
 *.py[cod]
-*.pyo
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
 .venv/
 venv/
 
-# Local environment and credentials
+# Credentials / local config
 .env
 .env.*
 !.env.example
 kaggle.json
+*.pem
+*.key
 
-# Training outputs
+# Generated training state
 runs/
 output/
 backups/
-import_v3/
+data/
 *.log
 *.pid
 *.lock
 *.tmp
-
-# Checkpoints / datasets are generated artifacts.
-*.pt
-*.pth
-*.ckpt
 *.parquet
 *.npy
 *.npz
-data/
 
-# Two small runtime assets intentionally versioned.
+# Checkpoints are generated unless explicitly versioned below.
+*.pt
+*.pth
+*.ckpt
 !assets/parent_promoted_v2.pt
 !assets/act_keep_gate_sweep_best.pt
-
-# Historical local copies
-*before_fix*
-*before_parallel*
-*before_safe_rollback*
-*.bak
-*.old
 
 # Editors / OS
 .vscode/

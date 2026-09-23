@@ -1,3 +1,1 @@
-"""Kaggriculture full-RL research package."""
-
-__all__ = ["observation", "actions"]
+"""FarmOS V4.6 policy core."""

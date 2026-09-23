@@ -1,1 +1,4 @@
--r requirements_v4.txt
+# Install the PyTorch build appropriate for your CUDA/CPU environment separately.
+numpy>=2.0,<3
+requests>=2.31
+jsonschema>=4.20

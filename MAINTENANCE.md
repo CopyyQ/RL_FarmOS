@@ -1,50 +1,64 @@
-# Maintenance workflow
+# Maintenance
 
-## Source of truth
+## Nguyên tắc
 
-This repository is the clean maintenance copy named `farmosv1`. Experimental training may continue in a separate working directory, but maintainable changes should be copied or cherry-picked here only after regression checks.
+- `farmosv1` là branch mã nguồn bảo trì, không phải thư mục lưu experiment.
+- Không commit `runs/`, `output/`, `backups/`, dataset, log, credential hoặc checkpoint train lớn.
+- Chỉ đưa thay đổi policy/runtime vào branch sau khi compile, regression và A/B benchmark.
+- Không giữ file thử nghiệm một lần trong repo. Git history đã là archive.
 
-## Before committing
+## Core source
 
-1. Run Python compilation on maintained entry points.
-2. Run action-alignment and determinism checks.
-3. Run focused A/B tests for any policy/runtime behavior change.
-4. Confirm no credentials, training logs, run directories or large generated checkpoints are staged.
-5. Inspect `git status` and the staged diff before committing.
+Các entrypoint/runtime được bảo trì:
 
-Recommended checks:
+- `winner_train.py`
+- `continuous_runtime.py`
+- `v45_skill_runtime.py`
+- `v45_skill_runtime_actkeep.py`
+- `train.sh`
+
+Core package nằm trong `src/kaggrl/`. Legacy V2/V3 và pipeline nghiên cứu cũ đã được loại khỏi branch này.
+
+## QA trước commit
 
 ```bash
-python -m py_compile \
+python -m compileall -q \
   winner_train.py \
   continuous_runtime.py \
   v45_skill_runtime.py \
-  v45_skill_runtime_actkeep.py
+  v45_skill_runtime_actkeep.py \
+  rollout src tools tests
 
-PYTHONPATH="$PWD/src:$PWD" python check_action_alignment.py
-PYTHONPATH="$PWD/src:$PWD" python check_one_determinism.py
+bash -n train.sh
+git diff --check
 ```
 
-## Versioned runtime assets
+Nếu có checkpoint:
 
-Only these small runtime assets are intentionally tracked:
+```bash
+export FARMOS_CHECKPOINT=/path/to/winner_v45_skill_stage_safe.pt
+python tests/test_action_alignment.py
+python tests/test_determinism.py
+python tools/bench/cutover.py
+python tools/bench/act_keep.py
+```
+
+## Safety gate
+
+Khi thay đổi learned-skill takeover:
+
+- animal escapes phải giữ 0 trên safety eval;
+- plant deaths không vượt baseline đã chốt;
+- takeover không thấp hơn ngưỡng cấu hình;
+- margin không vượt quá stage tolerance theo hướng xấu;
+- winner anchor vẫn reproduce;
+- runtime Kaggle phải giữ CPU compatibility.
+
+## Runtime assets được phép version
+
+Chỉ giữ các artifact nhỏ cần cho cấu hình bảo trì:
 
 - `assets/parent_promoted_v2.pt`
 - `assets/act_keep_gate_sweep_best.pt`
-
-Training checkpoints such as `winner_v4_latest.pt`, `winner_v4_safe_best.pt` and `winner_v45_skill_stage_safe.pt` stay outside Git.
-
-## Current safety expectations
-
-For learned-skill takeover, preserve:
-
-- animal escapes at zero on safety evals;
-- plant deaths at or below the established baseline;
-- takeover above the configured minimum;
-- margin within the configured stage tolerance;
-- winner anchor reproducibility;
-- CPU compatibility for Kaggle runtime/submission.
-
-## Git branch
-
-The maintained branch is `farmosv1`.
+- `assets/structural_gain_table_v4_2.json`
+- `assets/v51_main.py`
