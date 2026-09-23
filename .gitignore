@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+kaggle.json
+
+# Training outputs
+runs/
+output/
+backups/
+import_v3/
+*.log
+*.pid
+*.lock
+*.tmp
+
+# Checkpoints / datasets are generated artifacts.
+*.pt
+*.pth
+*.ckpt
+*.parquet
+*.npy
+*.npz
+data/
+
+# Two small runtime assets intentionally versioned.
+!assets/parent_promoted_v2.pt
+!assets/act_keep_gate_sweep_best.pt
+
+# Historical local copies
+*before_fix*
+*before_parallel*
+*before_safe_rollback*
+*.bak
+*.old
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

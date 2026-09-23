@@ -1,0 +1,262 @@
+{
+  "schema": "farmos_structural_gain_table_v4_2",
+  "candidate_route": 105,
+  "start_step": 144,
+  "horizon": 48,
+  "promotion_rule": {
+    "min_samples": 2,
+    "min_mean_gain": 500.0,
+    "max_negative_samples": 0
+  },
+  "source_routes": [
+    8,
+    101,
+    113
+  ],
+  "routes": {
+    "4": {
+      "route_id": 4,
+      "n": 1,
+      "mean_gain": -5283.0,
+      "min_gain": -5283,
+      "max_gain": -5283,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 1,
+      "evidence": [
+        {
+          "source": "fresh16",
+          "seed": 22991010,
+          "seat": 0,
+          "gain": -5283
+        }
+      ],
+      "promoted": false
+    },
+    "5": {
+      "route_id": 5,
+      "n": 1,
+      "mean_gain": -3077.0,
+      "min_gain": -3077,
+      "max_gain": -3077,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 1,
+      "evidence": [
+        {
+          "source": "fresh16",
+          "seed": 22991011,
+          "seat": 0,
+          "gain": -3077
+        }
+      ],
+      "promoted": false
+    },
+    "7": {
+      "route_id": 7,
+      "n": 1,
+      "mean_gain": -12509.0,
+      "min_gain": -12509,
+      "max_gain": -12509,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 1,
+      "evidence": [
+        {
+          "source": "fresh16",
+          "seed": 22991009,
+          "seat": 0,
+          "gain": -12509
+        }
+      ],
+      "promoted": false
+    },
+    "8": {
+      "route_id": 8,
+      "n": 2,
+      "mean_gain": 9234.5,
+      "min_gain": 9134,
+      "max_gain": 9335,
+      "positive": 2,
+      "neutral": 0,
+      "negative": 0,
+      "evidence": [
+        {
+          "source": "known3",
+          "seed": 22200206,
+          "seat": 0,
+          "gain": 9335
+        },
+        {
+          "source": "known3",
+          "seed": 22200487,
+          "seat": 0,
+          "gain": 9134
+        }
+      ],
+      "promoted": true
+    },
+    "101": {
+      "route_id": 101,
+      "n": 2,
+      "mean_gain": 3322.5,
+      "min_gain": 2229,
+      "max_gain": 4416,
+      "positive": 2,
+      "neutral": 0,
+      "negative": 0,
+      "evidence": [
+        {
+          "source": "fresh16",
+          "seed": 22991007,
+          "seat": 0,
+          "gain": 2229
+        },
+        {
+          "source": "fresh16",
+          "seed": 22991012,
+          "seat": 0,
+          "gain": 4416
+        }
+      ],
+      "promoted": true
+    },
+    "105": {
+      "route_id": 105,
+      "n": 6,
+      "mean_gain": 0.0,
+      "min_gain": 0,
+      "max_gain": 0,
+      "positive": 0,
+      "neutral": 6,
+      "negative": 0,
+      "evidence": [
+        {
+          "source": "fresh16",
+          "seed": 22991001,
+          "seat": 0,
+          "gain": 0
+        },
+        {
+          "source": "fresh16",
+          "seed": 22991005,
+          "seat": 0,
+          "gain": 0
+        },
+        {
+          "source": "fresh16",
+          "seed": 22991008,
+          "seat": 0,
+          "gain": 0
+        },
+        {
+          "source": "fresh16",
+          "seed": 22991014,
+          "seat": 0,
+          "gain": 0
+        },
+        {
+          "source": "fresh16",
+          "seed": 22991015,
+          "seat": 0,
+          "gain": 0
+        },
+        {
+          "source": "known3",
+          "seed": 22200726,
+          "seat": 1,
+          "gain": 0
+        }
+      ],
+      "promoted": false
+    },
+    "106": {
+      "route_id": 106,
+      "n": 1,
+      "mean_gain": -4.0,
+      "min_gain": -4,
+      "max_gain": -4,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 1,
+      "evidence": [
+        {
+          "source": "fresh16",
+          "seed": 22991000,
+          "seat": 0,
+          "gain": -4
+        }
+      ],
+      "promoted": false
+    },
+    "107": {
+      "route_id": 107,
+      "n": 2,
+      "mean_gain": -14.0,
+      "min_gain": -19,
+      "max_gain": -9,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 2,
+      "evidence": [
+        {
+          "source": "fresh16",
+          "seed": 22991002,
+          "seat": 0,
+          "gain": -9
+        },
+        {
+          "source": "fresh16",
+          "seed": 22991013,
+          "seat": 0,
+          "gain": -19
+        }
+      ],
+      "promoted": false
+    },
+    "113": {
+      "route_id": 113,
+      "n": 2,
+      "mean_gain": 3598.5,
+      "min_gain": 636,
+      "max_gain": 6561,
+      "positive": 2,
+      "neutral": 0,
+      "negative": 0,
+      "evidence": [
+        {
+          "source": "fresh16",
+          "seed": 22991003,
+          "seat": 0,
+          "gain": 636
+        },
+        {
+          "source": "fresh16",
+          "seed": 22991006,
+          "seat": 0,
+          "gain": 6561
+        }
+      ],
+      "promoted": true
+    },
+    "123": {
+      "route_id": 123,
+      "n": 1,
+      "mean_gain": 0.0,
+      "min_gain": 0,
+      "max_gain": 0,
+      "positive": 0,
+      "neutral": 1,
+      "negative": 0,
+      "evidence": [
+        {
+          "source": "fresh16",
+          "seed": 22991004,
+          "seat": 0,
+          "gain": 0
+        }
+      ],
+      "promoted": false
+    }
+  }
+}
