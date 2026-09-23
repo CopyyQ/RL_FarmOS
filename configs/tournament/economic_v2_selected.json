@@ -1,0 +1,1945 @@
+{
+  "schema": "farmos_candidate_manifest_v2_screened",
+  "seed": 20260924,
+  "description": "Raw multi-family economic portfolio candidates. Must pass shop-space behavioral screening before game tournament.",
+  "family_counts": {
+    "A_wheat_to_scarcity": 40,
+    "B_glut_to_scarcity": 40,
+    "C_nonbest_to_best_roi": 40,
+    "D_any_to_best_guarded": 40,
+    "E_crop_diversification": 30,
+    "F_shop_regime_specialist": 30,
+    "G_cow_milk": 20,
+    "H_sheep_wool": 20,
+    "I_goose_egg": 20,
+    "J_crop_animal_hybrid": 20
+  },
+  "raw_candidate_count": 301,
+  "candidates": [
+    {
+      "id": "baseline_official",
+      "baseline": true,
+      "family": "official_baseline",
+      "runtime_options": {
+        "enable_portfolio_switch": false
+      }
+    },
+    {
+      "id": "v2_A_wheat_to_scarcity_002",
+      "baseline": false,
+      "family": "A_wheat_to_scarcity",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.6,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 4.0,
+        "portfolio_min_undersupply_ratio": 0.1,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 1.3,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "wheat",
+        "portfolio_objective": "scarcity_crop"
+      }
+    },
+    {
+      "id": "v2_A_wheat_to_scarcity_003",
+      "baseline": false,
+      "family": "A_wheat_to_scarcity",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 216,
+        "portfolio_horizon_extra_days": 0.0,
+        "portfolio_min_undersupply_ratio": 0.0,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.2,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "wheat",
+        "portfolio_objective": "scarcity_crop"
+      }
+    },
+    {
+      "id": "v2_A_wheat_to_scarcity_004",
+      "baseline": false,
+      "family": "A_wheat_to_scarcity",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 144,
+        "portfolio_horizon_extra_days": 10.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.35,
+        "portfolio_source_mode": "wheat",
+        "portfolio_objective": "scarcity_crop"
+      }
+    },
+    {
+      "id": "v2_A_wheat_to_scarcity_010",
+      "baseline": false,
+      "family": "A_wheat_to_scarcity",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.35,
+        "portfolio_feed_reserve_days": 1.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 10.0,
+        "portfolio_min_undersupply_ratio": 0.5,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.2,
+        "portfolio_diversity_penalty": 0.35,
+        "portfolio_source_mode": "wheat",
+        "portfolio_objective": "scarcity_crop"
+      }
+    },
+    {
+      "id": "v2_C_nonbest_to_best_roi_001",
+      "baseline": false,
+      "family": "C_nonbest_to_best_roi",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 288,
+        "portfolio_horizon_extra_days": 6.0,
+        "portfolio_min_undersupply_ratio": 0.0,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "nonbest",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_C_nonbest_to_best_roi_002",
+      "baseline": false,
+      "family": "C_nonbest_to_best_roi",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 1.0,
+        "portfolio_activation_step": 288,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.5,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 1.3,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "nonbest",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_C_nonbest_to_best_roi_003",
+      "baseline": false,
+      "family": "C_nonbest_to_best_roi",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.6,
+        "portfolio_feed_reserve_days": 6.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.1,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 0.85,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "nonbest",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_C_nonbest_to_best_roi_004",
+      "baseline": false,
+      "family": "C_nonbest_to_best_roi",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.08,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 144,
+        "portfolio_horizon_extra_days": 6.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 0.85,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.1,
+        "portfolio_source_mode": "nonbest",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_C_nonbest_to_best_roi_005",
+      "baseline": false,
+      "family": "C_nonbest_to_best_roi",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.35,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 6.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "nonbest",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_C_nonbest_to_best_roi_006",
+      "baseline": false,
+      "family": "C_nonbest_to_best_roi",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 144,
+        "portfolio_horizon_extra_days": 0.0,
+        "portfolio_min_undersupply_ratio": 0.0,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 1.0,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "nonbest",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_C_nonbest_to_best_roi_007",
+      "baseline": false,
+      "family": "C_nonbest_to_best_roi",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.08,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.0,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "nonbest",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_C_nonbest_to_best_roi_008",
+      "baseline": false,
+      "family": "C_nonbest_to_best_roi",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.6,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 288,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 1.0,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.35,
+        "portfolio_source_mode": "nonbest",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_C_nonbest_to_best_roi_009",
+      "baseline": false,
+      "family": "C_nonbest_to_best_roi",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.08,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 288,
+        "portfolio_horizon_extra_days": 6.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 0.85,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.1,
+        "portfolio_source_mode": "nonbest",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_C_nonbest_to_best_roi_011",
+      "baseline": false,
+      "family": "C_nonbest_to_best_roi",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.2,
+        "portfolio_feed_reserve_days": 6.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.2,
+        "portfolio_diversity_penalty": 0.35,
+        "portfolio_source_mode": "nonbest",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_C_nonbest_to_best_roi_012",
+      "baseline": false,
+      "family": "C_nonbest_to_best_roi",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.35,
+        "portfolio_feed_reserve_days": 6.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.1,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.2,
+        "portfolio_diversity_penalty": 0.35,
+        "portfolio_source_mode": "nonbest",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_C_nonbest_to_best_roi_013",
+      "baseline": false,
+      "family": "C_nonbest_to_best_roi",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 144,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.05,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.1,
+        "portfolio_source_mode": "nonbest",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_C_nonbest_to_best_roi_014",
+      "baseline": false,
+      "family": "C_nonbest_to_best_roi",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.6,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 0.0,
+        "portfolio_min_undersupply_ratio": 0.1,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "nonbest",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_C_nonbest_to_best_roi_016",
+      "baseline": false,
+      "family": "C_nonbest_to_best_roi",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.04,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 144,
+        "portfolio_horizon_extra_days": 10.0,
+        "portfolio_min_undersupply_ratio": 0.5,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 1.3,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.35,
+        "portfolio_source_mode": "nonbest",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_C_nonbest_to_best_roi_017",
+      "baseline": false,
+      "family": "C_nonbest_to_best_roi",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.04,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 216,
+        "portfolio_horizon_extra_days": 6.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "nonbest",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_C_nonbest_to_best_roi_019",
+      "baseline": false,
+      "family": "C_nonbest_to_best_roi",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.2,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 6.0,
+        "portfolio_min_undersupply_ratio": 0.5,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.1,
+        "portfolio_source_mode": "nonbest",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_D_any_to_best_guarded_001",
+      "baseline": false,
+      "family": "D_any_to_best_guarded",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 144,
+        "portfolio_horizon_extra_days": 10.0,
+        "portfolio_min_undersupply_ratio": 0.0,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_D_any_to_best_guarded_002",
+      "baseline": false,
+      "family": "D_any_to_best_guarded",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 1.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 10.0,
+        "portfolio_min_undersupply_ratio": 0.5,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_D_any_to_best_guarded_006",
+      "baseline": false,
+      "family": "D_any_to_best_guarded",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.6,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 216,
+        "portfolio_horizon_extra_days": 10.0,
+        "portfolio_min_undersupply_ratio": 0.1,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.35,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_D_any_to_best_guarded_007",
+      "baseline": false,
+      "family": "D_any_to_best_guarded",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.2,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 216,
+        "portfolio_horizon_extra_days": 10.0,
+        "portfolio_min_undersupply_ratio": 0.05,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.1,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_D_any_to_best_guarded_008",
+      "baseline": false,
+      "family": "D_any_to_best_guarded",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 6.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_D_any_to_best_guarded_009",
+      "baseline": false,
+      "family": "D_any_to_best_guarded",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 288,
+        "portfolio_horizon_extra_days": 6.0,
+        "portfolio_min_undersupply_ratio": 0.1,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 0.85,
+        "portfolio_animal_payback_margin": 0.2,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_D_any_to_best_guarded_011",
+      "baseline": false,
+      "family": "D_any_to_best_guarded",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.2,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 4.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_D_any_to_best_guarded_014",
+      "baseline": false,
+      "family": "D_any_to_best_guarded",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.2,
+        "portfolio_feed_reserve_days": 6.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 4.0,
+        "portfolio_min_undersupply_ratio": 0.05,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 1.0,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_D_any_to_best_guarded_015",
+      "baseline": false,
+      "family": "D_any_to_best_guarded",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 144,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.5,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 1.3,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_D_any_to_best_guarded_016",
+      "baseline": false,
+      "family": "D_any_to_best_guarded",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 6.0,
+        "portfolio_activation_step": 288,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_D_any_to_best_guarded_017",
+      "baseline": false,
+      "family": "D_any_to_best_guarded",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_D_any_to_best_guarded_018",
+      "baseline": false,
+      "family": "D_any_to_best_guarded",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 4.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_D_any_to_best_guarded_021",
+      "baseline": false,
+      "family": "D_any_to_best_guarded",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.35,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 0.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 1.3,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.1,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_D_any_to_best_guarded_024",
+      "baseline": false,
+      "family": "D_any_to_best_guarded",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 6.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 4.0,
+        "portfolio_min_undersupply_ratio": 0.05,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 1.3,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_D_any_to_best_guarded_026",
+      "baseline": false,
+      "family": "D_any_to_best_guarded",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.2,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 6.0,
+        "portfolio_min_undersupply_ratio": 0.0,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_D_any_to_best_guarded_035",
+      "baseline": false,
+      "family": "D_any_to_best_guarded",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 216,
+        "portfolio_horizon_extra_days": 10.0,
+        "portfolio_min_undersupply_ratio": 0.05,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.1,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "best_crop_roi"
+      }
+    },
+    {
+      "id": "v2_E_crop_diversification_001",
+      "baseline": false,
+      "family": "E_crop_diversification",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.04,
+        "portfolio_feed_reserve_days": 6.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 4.0,
+        "portfolio_min_undersupply_ratio": 0.5,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 1.0,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "diversified_crop"
+      }
+    },
+    {
+      "id": "v2_E_crop_diversification_002",
+      "baseline": false,
+      "family": "E_crop_diversification",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.08,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 6.0,
+        "portfolio_min_undersupply_ratio": 0.05,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 1.3,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "diversified_crop"
+      }
+    },
+    {
+      "id": "v2_E_crop_diversification_003",
+      "baseline": false,
+      "family": "E_crop_diversification",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 288,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 0.85,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.35,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "diversified_crop"
+      }
+    },
+    {
+      "id": "v2_E_crop_diversification_004",
+      "baseline": false,
+      "family": "E_crop_diversification",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.6,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 4.0,
+        "portfolio_min_undersupply_ratio": 0.0,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 1.3,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.1,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "diversified_crop"
+      }
+    },
+    {
+      "id": "v2_E_crop_diversification_005",
+      "baseline": false,
+      "family": "E_crop_diversification",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.2,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 288,
+        "portfolio_horizon_extra_days": 6.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.2,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "diversified_crop"
+      }
+    },
+    {
+      "id": "v2_E_crop_diversification_006",
+      "baseline": false,
+      "family": "E_crop_diversification",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.08,
+        "portfolio_feed_reserve_days": 6.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 4.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "diversified_crop"
+      }
+    },
+    {
+      "id": "v2_E_crop_diversification_007",
+      "baseline": false,
+      "family": "E_crop_diversification",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.04,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 216,
+        "portfolio_horizon_extra_days": 10.0,
+        "portfolio_min_undersupply_ratio": 0.05,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 1.0,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.35,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "diversified_crop"
+      }
+    },
+    {
+      "id": "v2_E_crop_diversification_008",
+      "baseline": false,
+      "family": "E_crop_diversification",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 0.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "diversified_crop"
+      }
+    },
+    {
+      "id": "v2_E_crop_diversification_009",
+      "baseline": false,
+      "family": "E_crop_diversification",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.08,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 0.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "diversified_crop"
+      }
+    },
+    {
+      "id": "v2_E_crop_diversification_010",
+      "baseline": false,
+      "family": "E_crop_diversification",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.04,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 144,
+        "portfolio_horizon_extra_days": 6.0,
+        "portfolio_min_undersupply_ratio": 0.0,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.2,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "diversified_crop"
+      }
+    },
+    {
+      "id": "v2_E_crop_diversification_011",
+      "baseline": false,
+      "family": "E_crop_diversification",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.08,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.05,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "diversified_crop"
+      }
+    },
+    {
+      "id": "v2_E_crop_diversification_012",
+      "baseline": false,
+      "family": "E_crop_diversification",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.04,
+        "portfolio_feed_reserve_days": 6.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 0.0,
+        "portfolio_min_undersupply_ratio": 0.05,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 0.85,
+        "portfolio_animal_payback_margin": 0.2,
+        "portfolio_diversity_penalty": 0.1,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "diversified_crop"
+      }
+    },
+    {
+      "id": "v2_E_crop_diversification_013",
+      "baseline": false,
+      "family": "E_crop_diversification",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.04,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 288,
+        "portfolio_horizon_extra_days": 0.0,
+        "portfolio_min_undersupply_ratio": 0.5,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "diversified_crop"
+      }
+    },
+    {
+      "id": "v2_E_crop_diversification_014",
+      "baseline": false,
+      "family": "E_crop_diversification",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.04,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 10.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 0.85,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "diversified_crop"
+      }
+    },
+    {
+      "id": "v2_E_crop_diversification_015",
+      "baseline": false,
+      "family": "E_crop_diversification",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.35,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 4.0,
+        "portfolio_min_undersupply_ratio": 0.0,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "diversified_crop"
+      }
+    },
+    {
+      "id": "v2_E_crop_diversification_016",
+      "baseline": false,
+      "family": "E_crop_diversification",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.6,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 144,
+        "portfolio_horizon_extra_days": 4.0,
+        "portfolio_min_undersupply_ratio": 0.1,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 1.0,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.1,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "diversified_crop"
+      }
+    },
+    {
+      "id": "v2_F_shop_regime_specialist_001",
+      "baseline": false,
+      "family": "F_shop_regime_specialist",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.6,
+        "portfolio_feed_reserve_days": 6.0,
+        "portfolio_activation_step": 216,
+        "portfolio_horizon_extra_days": 4.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 1.0,
+        "portfolio_animal_payback_margin": 0.2,
+        "portfolio_diversity_penalty": 0.1,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "shop_specialist"
+      }
+    },
+    {
+      "id": "v2_F_shop_regime_specialist_002",
+      "baseline": false,
+      "family": "F_shop_regime_specialist",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 288,
+        "portfolio_horizon_extra_days": 4.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 0.85,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.35,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "shop_specialist"
+      }
+    },
+    {
+      "id": "v2_F_shop_regime_specialist_003",
+      "baseline": false,
+      "family": "F_shop_regime_specialist",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.2,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 144,
+        "portfolio_horizon_extra_days": 4.0,
+        "portfolio_min_undersupply_ratio": 0.0,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.2,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "shop_specialist"
+      }
+    },
+    {
+      "id": "v2_F_shop_regime_specialist_004",
+      "baseline": false,
+      "family": "F_shop_regime_specialist",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.6,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 144,
+        "portfolio_horizon_extra_days": 10.0,
+        "portfolio_min_undersupply_ratio": 0.05,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.35,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "shop_specialist"
+      }
+    },
+    {
+      "id": "v2_F_shop_regime_specialist_005",
+      "baseline": false,
+      "family": "F_shop_regime_specialist",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.35,
+        "portfolio_feed_reserve_days": 1.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 1.3,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "shop_specialist"
+      }
+    },
+    {
+      "id": "v2_F_shop_regime_specialist_006",
+      "baseline": false,
+      "family": "F_shop_regime_specialist",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 216,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.0,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.1,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "shop_specialist"
+      }
+    },
+    {
+      "id": "v2_F_shop_regime_specialist_007",
+      "baseline": false,
+      "family": "F_shop_regime_specialist",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.35,
+        "portfolio_feed_reserve_days": 1.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 6.0,
+        "portfolio_min_undersupply_ratio": 0.0,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "shop_specialist"
+      }
+    },
+    {
+      "id": "v2_F_shop_regime_specialist_008",
+      "baseline": false,
+      "family": "F_shop_regime_specialist",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.35,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 288,
+        "portfolio_horizon_extra_days": 10.0,
+        "portfolio_min_undersupply_ratio": 0.5,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 1.0,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.35,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "shop_specialist"
+      }
+    },
+    {
+      "id": "v2_F_shop_regime_specialist_009",
+      "baseline": false,
+      "family": "F_shop_regime_specialist",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.08,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 288,
+        "portfolio_horizon_extra_days": 6.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 0.85,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "shop_specialist"
+      }
+    },
+    {
+      "id": "v2_F_shop_regime_specialist_011",
+      "baseline": false,
+      "family": "F_shop_regime_specialist",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.2,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 288,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.5,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 1.0,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.1,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "shop_specialist"
+      }
+    },
+    {
+      "id": "v2_F_shop_regime_specialist_012",
+      "baseline": false,
+      "family": "F_shop_regime_specialist",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.08,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 144,
+        "portfolio_horizon_extra_days": 4.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 1.0,
+        "portfolio_animal_payback_margin": 0.2,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "shop_specialist"
+      }
+    },
+    {
+      "id": "v2_F_shop_regime_specialist_013",
+      "baseline": false,
+      "family": "F_shop_regime_specialist",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.6,
+        "portfolio_feed_reserve_days": 6.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 0.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 1.0,
+        "portfolio_animal_payback_margin": 0.2,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "shop_specialist"
+      }
+    },
+    {
+      "id": "v2_F_shop_regime_specialist_014",
+      "baseline": false,
+      "family": "F_shop_regime_specialist",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.35,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 144,
+        "portfolio_horizon_extra_days": 0.0,
+        "portfolio_min_undersupply_ratio": 0.5,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 1.3,
+        "portfolio_animal_payback_margin": 0.2,
+        "portfolio_diversity_penalty": 0.1,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "shop_specialist"
+      }
+    },
+    {
+      "id": "v2_F_shop_regime_specialist_015",
+      "baseline": false,
+      "family": "F_shop_regime_specialist",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.08,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 144,
+        "portfolio_horizon_extra_days": 10.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "shop_specialist"
+      }
+    },
+    {
+      "id": "v2_F_shop_regime_specialist_016",
+      "baseline": false,
+      "family": "F_shop_regime_specialist",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.2,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.05,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 0.85,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.1,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "shop_specialist"
+      }
+    },
+    {
+      "id": "v2_G_cow_milk_001",
+      "baseline": false,
+      "family": "G_cow_milk",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.08,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 288,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 1.0,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.1,
+        "portfolio_source_mode": "none",
+        "portfolio_objective": "animal",
+        "portfolio_forced_animal": "COW"
+      }
+    },
+    {
+      "id": "v2_G_cow_milk_002",
+      "baseline": false,
+      "family": "G_cow_milk",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 1.0,
+        "portfolio_activation_step": 288,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "none",
+        "portfolio_objective": "animal",
+        "portfolio_forced_animal": "COW"
+      }
+    },
+    {
+      "id": "v2_G_cow_milk_003",
+      "baseline": false,
+      "family": "G_cow_milk",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.6,
+        "portfolio_feed_reserve_days": 6.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.2,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "none",
+        "portfolio_objective": "animal",
+        "portfolio_forced_animal": "COW"
+      }
+    },
+    {
+      "id": "v2_G_cow_milk_004",
+      "baseline": false,
+      "family": "G_cow_milk",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.2,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 10.0,
+        "portfolio_min_undersupply_ratio": 0.5,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 1.3,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.35,
+        "portfolio_source_mode": "none",
+        "portfolio_objective": "animal",
+        "portfolio_forced_animal": "COW"
+      }
+    },
+    {
+      "id": "v2_G_cow_milk_007",
+      "baseline": false,
+      "family": "G_cow_milk",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.6,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 0.0,
+        "portfolio_min_undersupply_ratio": 0.05,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.1,
+        "portfolio_source_mode": "none",
+        "portfolio_objective": "animal",
+        "portfolio_forced_animal": "COW"
+      }
+    },
+    {
+      "id": "v2_G_cow_milk_008",
+      "baseline": false,
+      "family": "G_cow_milk",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 0.0,
+        "portfolio_min_undersupply_ratio": 0.5,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "none",
+        "portfolio_objective": "animal",
+        "portfolio_forced_animal": "COW"
+      }
+    },
+    {
+      "id": "v2_H_sheep_wool_001",
+      "baseline": false,
+      "family": "H_sheep_wool",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 144,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "none",
+        "portfolio_objective": "animal",
+        "portfolio_forced_animal": "SHEEP"
+      }
+    },
+    {
+      "id": "v2_H_sheep_wool_004",
+      "baseline": false,
+      "family": "H_sheep_wool",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.2,
+        "portfolio_feed_reserve_days": 1.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 10.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 0.85,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.35,
+        "portfolio_source_mode": "none",
+        "portfolio_objective": "animal",
+        "portfolio_forced_animal": "SHEEP"
+      }
+    },
+    {
+      "id": "v2_H_sheep_wool_006",
+      "baseline": false,
+      "family": "H_sheep_wool",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.2,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 4.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "none",
+        "portfolio_objective": "animal",
+        "portfolio_forced_animal": "SHEEP"
+      }
+    },
+    {
+      "id": "v2_H_sheep_wool_007",
+      "baseline": false,
+      "family": "H_sheep_wool",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.6,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 144,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.5,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.2,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "none",
+        "portfolio_objective": "animal",
+        "portfolio_forced_animal": "SHEEP"
+      }
+    },
+    {
+      "id": "v2_H_sheep_wool_018",
+      "baseline": false,
+      "family": "H_sheep_wool",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.2,
+        "portfolio_feed_reserve_days": 1.0,
+        "portfolio_activation_step": 144,
+        "portfolio_horizon_extra_days": 10.0,
+        "portfolio_min_undersupply_ratio": 0.05,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 0.85,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "none",
+        "portfolio_objective": "animal",
+        "portfolio_forced_animal": "SHEEP"
+      }
+    },
+    {
+      "id": "v2_I_goose_egg_001",
+      "baseline": false,
+      "family": "I_goose_egg",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.6,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 10.0,
+        "portfolio_min_undersupply_ratio": 0.1,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 0.85,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "none",
+        "portfolio_objective": "animal",
+        "portfolio_forced_animal": "GOOSE"
+      }
+    },
+    {
+      "id": "v2_I_goose_egg_002",
+      "baseline": false,
+      "family": "I_goose_egg",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 216,
+        "portfolio_horizon_extra_days": 6.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 1.3,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.35,
+        "portfolio_source_mode": "none",
+        "portfolio_objective": "animal",
+        "portfolio_forced_animal": "GOOSE"
+      }
+    },
+    {
+      "id": "v2_I_goose_egg_004",
+      "baseline": false,
+      "family": "I_goose_egg",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.08,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 4.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 1.0,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "none",
+        "portfolio_objective": "animal",
+        "portfolio_forced_animal": "GOOSE"
+      }
+    },
+    {
+      "id": "v2_I_goose_egg_005",
+      "baseline": false,
+      "family": "I_goose_egg",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.2,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 4.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "none",
+        "portfolio_objective": "animal",
+        "portfolio_forced_animal": "GOOSE"
+      }
+    },
+    {
+      "id": "v2_I_goose_egg_008",
+      "baseline": false,
+      "family": "I_goose_egg",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.08,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 216,
+        "portfolio_horizon_extra_days": 6.0,
+        "portfolio_min_undersupply_ratio": 0.0,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.2,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "none",
+        "portfolio_objective": "animal",
+        "portfolio_forced_animal": "GOOSE"
+      }
+    },
+    {
+      "id": "v2_I_goose_egg_009",
+      "baseline": false,
+      "family": "I_goose_egg",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.6,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 216,
+        "portfolio_horizon_extra_days": 0.0,
+        "portfolio_min_undersupply_ratio": 0.5,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.35,
+        "portfolio_source_mode": "none",
+        "portfolio_objective": "animal",
+        "portfolio_forced_animal": "GOOSE"
+      }
+    },
+    {
+      "id": "v2_J_crop_animal_hybrid_002",
+      "baseline": false,
+      "family": "J_crop_animal_hybrid",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.2,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 288,
+        "portfolio_horizon_extra_days": 6.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.2,
+        "portfolio_diversity_penalty": 0.1,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "hybrid"
+      }
+    },
+    {
+      "id": "v2_J_crop_animal_hybrid_003",
+      "baseline": false,
+      "family": "J_crop_animal_hybrid",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 216,
+        "portfolio_horizon_extra_days": 0.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "hybrid"
+      }
+    },
+    {
+      "id": "v2_J_crop_animal_hybrid_004",
+      "baseline": false,
+      "family": "J_crop_animal_hybrid",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.04,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.05,
+        "portfolio_min_shop_demand": 2.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "hybrid"
+      }
+    },
+    {
+      "id": "v2_J_crop_animal_hybrid_005",
+      "baseline": false,
+      "family": "J_crop_animal_hybrid",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.04,
+        "portfolio_feed_reserve_days": 6.0,
+        "portfolio_activation_step": 288,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "hybrid"
+      }
+    },
+    {
+      "id": "v2_J_crop_animal_hybrid_006",
+      "baseline": false,
+      "family": "J_crop_animal_hybrid",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.6,
+        "portfolio_feed_reserve_days": 6.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 0.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 1.3,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "hybrid"
+      }
+    },
+    {
+      "id": "v2_J_crop_animal_hybrid_007",
+      "baseline": false,
+      "family": "J_crop_animal_hybrid",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.35,
+        "portfolio_feed_reserve_days": 2.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 4.0,
+        "portfolio_min_undersupply_ratio": 0.2,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 0.85,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "hybrid"
+      }
+    },
+    {
+      "id": "v2_J_crop_animal_hybrid_009",
+      "baseline": false,
+      "family": "J_crop_animal_hybrid",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.6,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 10.0,
+        "portfolio_min_undersupply_ratio": 0.05,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 1.0,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.1,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "hybrid"
+      }
+    },
+    {
+      "id": "v2_J_crop_animal_hybrid_010",
+      "baseline": false,
+      "family": "J_crop_animal_hybrid",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.35,
+        "portfolio_feed_reserve_days": 1.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 6.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.35,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "hybrid"
+      }
+    },
+    {
+      "id": "v2_J_crop_animal_hybrid_011",
+      "baseline": false,
+      "family": "J_crop_animal_hybrid",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.08,
+        "portfolio_feed_reserve_days": 6.0,
+        "portfolio_activation_step": 216,
+        "portfolio_horizon_extra_days": 0.0,
+        "portfolio_min_undersupply_ratio": 0.1,
+        "portfolio_min_shop_demand": 1.0,
+        "portfolio_animal_min_roi": 0.7,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "hybrid"
+      }
+    },
+    {
+      "id": "v2_J_crop_animal_hybrid_012",
+      "baseline": false,
+      "family": "J_crop_animal_hybrid",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.2,
+        "portfolio_feed_reserve_days": 6.0,
+        "portfolio_activation_step": 288,
+        "portfolio_horizon_extra_days": 2.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 0.85,
+        "portfolio_animal_payback_margin": 0.0,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "hybrid"
+      }
+    },
+    {
+      "id": "v2_J_crop_animal_hybrid_013",
+      "baseline": false,
+      "family": "J_crop_animal_hybrid",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.04,
+        "portfolio_feed_reserve_days": 4.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 4.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.2,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "hybrid"
+      }
+    },
+    {
+      "id": "v2_J_crop_animal_hybrid_014",
+      "baseline": false,
+      "family": "J_crop_animal_hybrid",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.2,
+        "portfolio_feed_reserve_days": 1.0,
+        "portfolio_activation_step": 360,
+        "portfolio_horizon_extra_days": 6.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.35,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "hybrid"
+      }
+    },
+    {
+      "id": "v2_J_crop_animal_hybrid_015",
+      "baseline": false,
+      "family": "J_crop_animal_hybrid",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.12,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 216,
+        "portfolio_horizon_extra_days": 10.0,
+        "portfolio_min_undersupply_ratio": 0.5,
+        "portfolio_min_shop_demand": 3.0,
+        "portfolio_animal_min_roi": 1.0,
+        "portfolio_animal_payback_margin": 0.1,
+        "portfolio_diversity_penalty": 0.35,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "hybrid"
+      }
+    },
+    {
+      "id": "v2_J_crop_animal_hybrid_016",
+      "baseline": false,
+      "family": "J_crop_animal_hybrid",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.08,
+        "portfolio_feed_reserve_days": 6.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 10.0,
+        "portfolio_min_undersupply_ratio": 0.35,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.2,
+        "portfolio_diversity_penalty": 0.0,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "hybrid"
+      }
+    },
+    {
+      "id": "v2_J_crop_animal_hybrid_017",
+      "baseline": false,
+      "family": "J_crop_animal_hybrid",
+      "runtime_options": {
+        "enable_portfolio_switch": true,
+        "portfolio_crop_improvement_ratio": 1.2,
+        "portfolio_feed_reserve_days": 3.0,
+        "portfolio_activation_step": 72,
+        "portfolio_horizon_extra_days": 4.0,
+        "portfolio_min_undersupply_ratio": 0.0,
+        "portfolio_min_shop_demand": 0.0,
+        "portfolio_animal_min_roi": 1.15,
+        "portfolio_animal_payback_margin": 0.2,
+        "portfolio_diversity_penalty": 0.35,
+        "portfolio_source_mode": "any",
+        "portfolio_objective": "hybrid"
+      }
+    }
+  ],
+  "screen": {
+    "total_prefix_multisets": 12869,
+    "raw_candidate_count": 301,
+    "exact_unique_count": 191,
+    "selected_count": 100,
+    "near_duplicate_similarity": 0.997,
+    "selected_family_counts": {
+      "A_wheat_to_scarcity": 4,
+      "C_nonbest_to_best_roi": 16,
+      "D_any_to_best_guarded": 16,
+      "E_crop_diversification": 16,
+      "F_shop_regime_specialist": 15,
+      "G_cow_milk": 6,
+      "H_sheep_wool": 5,
+      "I_goose_egg": 6,
+      "J_crop_animal_hybrid": 15,
+      "official_baseline": 1
+    }
+  }
+}
