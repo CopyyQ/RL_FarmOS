@@ -3,6 +3,8 @@ from __future__ import annotations
 import math
 from typing import Any
 
+from .v4_market_race import market_price
+
 ECON_SHOPS = (
     "BAKERY", "PIZZA_SHOP", "BRUNCH_SPOT", "YARN_STORE",
     "ICE_CREAM_SHOP", "PET_CAFE", "SMOOTHIE_SHOP", "FARMERS_MARKET",
@@ -59,6 +61,68 @@ def _clip01(x: float) -> float:
 
 def _norm_roi(roi: float) -> float:
     return float(max(-1.0, min(1.0, math.log(max(1e-4, roi)) / 3.0)))
+
+
+def _future_event_count(step: int, horizon_steps: int, period: int) -> int:
+    step = int(step)
+    horizon_steps = max(0, int(horizon_steps))
+    period = max(1, int(period))
+    return max(
+        0,
+        (step + horizon_steps) // period - step // period,
+    )
+
+
+def _future_sink_for_horizon(
+    demand,
+    *,
+    step,
+    horizon_steps,
+    turns_per_day,
+):
+    shop_events = _future_event_count(step, horizon_steps, 4)
+    center_events = _future_event_count(
+        step, horizon_steps, turns_per_day
+    )
+    return {
+        product: (
+            float(demand.get(product, 0.0)) * float(shop_events)
+            + (
+                float(center_events)
+                if product in TOWN_CENTER_PRODUCTS
+                else 0.0
+            )
+        )
+        for product in ECON_PRODUCTS
+    }
+
+
+def _sequential_sale_revenue(
+    product: str,
+    units: float,
+    inventory: float,
+):
+    quantity = max(0, int(round(float(units))))
+    market_inventory = max(0, int(round(float(inventory))))
+    revenue = 0.0
+    first_price = float(market_price(product, market_inventory))
+    for _ in range(quantity):
+        price = float(market_price(product, market_inventory))
+        revenue += price
+        if price > 1.0:
+            market_inventory += 1
+    average_price = (
+        revenue / max(1, quantity)
+        if quantity > 0
+        else first_price
+    )
+    return {
+        "units": quantity,
+        "revenue": float(revenue),
+        "first_price": float(first_price),
+        "average_price": float(average_price),
+        "post_inventory": int(market_inventory),
+    }
 
 
 def _time_state(observation, configuration=None):
@@ -170,7 +234,100 @@ def _farm_stats(farm, current_day: int, remaining_days: float):
     return stats
 
 
-def strategy_snapshot(observation, configuration=None):
+def projected_farm_output(
+    observation,
+    horizon_days,
+    *,
+    player=None,
+    configuration=None,
+):
+    _, current_day, _, _, _, remaining_days = _time_state(
+        observation, configuration
+    )
+    farms = list(_get(observation, "farms", []) or [])
+    if player is None:
+        player = int(_get(observation, "player", 0) or 0)
+    player = int(player)
+    if not (0 <= player < len(farms)):
+        return {product: 0.0 for product in ECON_PRODUCTS}
+    horizon = max(0.0, min(float(horizon_days), float(remaining_days)))
+    return dict(
+        _farm_stats(farms[player], current_day, horizon)["projected"]
+    )
+
+
+def _projected_crop_sale(
+    crop,
+    *,
+    units,
+    own,
+    rival,
+    current_day,
+    remaining_days,
+    step,
+    turns_per_day,
+    remaining_steps,
+    demand,
+    inventory,
+    horizon_extra_days=0.0,
+):
+    cd = CROP_META[crop]
+    sale_horizon_days = min(
+        float(remaining_days),
+        max(
+            0.0,
+            float(cd["first"]) + max(0.0, float(horizon_extra_days)),
+        ),
+    )
+    horizon_steps = min(
+        int(remaining_steps),
+        max(
+            0,
+            int(math.ceil(sale_horizon_days * turns_per_day)),
+        ),
+    )
+    horizon_days = horizon_steps / float(max(1, turns_per_day))
+    own_h = _farm_stats(own, current_day, horizon_days)
+    rival_h = _farm_stats(rival, current_day, horizon_days)
+    sink = _future_sink_for_horizon(
+        demand,
+        step=step,
+        horizon_steps=horizon_steps,
+        turns_per_day=turns_per_day,
+    )
+    projected_inventory = (
+        float(_get(inventory, crop, 10000.0) or 0.0)
+        + float(own_h["projected"].get(crop, 0.0))
+        + float(rival_h["projected"].get(crop, 0.0))
+        - float(sink.get(crop, 0.0))
+    )
+    sale = _sequential_sale_revenue(
+        crop,
+        units,
+        max(0.0, projected_inventory),
+    )
+    sale.update(
+        {
+            "horizon_steps": int(horizon_steps),
+            "horizon_days": float(horizon_days),
+            "projected_inventory": float(max(0.0, projected_inventory)),
+            "future_sink": float(sink.get(crop, 0.0)),
+            "background_supply": float(
+                own_h["projected"].get(crop, 0.0)
+                + rival_h["projected"].get(crop, 0.0)
+            ),
+        }
+    )
+    return sale
+
+
+def strategy_snapshot(
+    observation,
+    configuration=None,
+    *,
+    projected_crop_value=False,
+    projected_crop_horizon_extra_days=0.0,
+):
     step, current_day, turns_per_day, episode_steps, remaining_steps, remaining_days = _time_state(observation, configuration)
     town = _get(observation, "town", {}) or {}
     unlocked = list(_get(town, "unlocked_shops", []) or [])
@@ -248,12 +405,42 @@ def strategy_snapshot(observation, configuration=None):
     crop_roi = {}
     crop_score = {}
     crop_viable = {}
+    crop_projected_price = {}
+    crop_projected_revenue = {}
+    crop_projected_inventory = {}
+    crop_projected_horizon = {}
+    crop_undersupply_ratio = {}
     for crop, cd in CROP_META.items():
         units = _new_crop_units(crop, remaining_days)
         viable = units > 0.0 and crop_space > 0.10 and care_factor(1.35) > 0.20
         crop_viable[crop] = bool(viable)
+        projected = None
         if not viable:
             roi = 1e-4
+        elif projected_crop_value:
+            projected = _projected_crop_sale(
+                crop,
+                units=units,
+                own=own,
+                rival=rival,
+                current_day=current_day,
+                remaining_days=remaining_days,
+                step=step,
+                turns_per_day=turns_per_day,
+                remaining_steps=remaining_steps,
+                demand=demand,
+                inventory=inventory,
+                horizon_extra_days=projected_crop_horizon_extra_days,
+            )
+            revenue = float(projected["revenue"])
+            roi = (
+                revenue
+                * care_factor(1.35)
+                * crop_space
+                * timing_factor(cd["first"])
+                / max(1.0, cd["seed"])
+            )
+            roi = max(1e-4, roi)
         else:
             price = float(_get(prices, crop, ECON_BASE_PRICE[crop]) or 0.0)
             demand_boost = 1.0 + 0.12 * demand[crop]
@@ -262,6 +449,21 @@ def strategy_snapshot(observation, configuration=None):
             roi = max(1e-4, roi)
         crop_roi[crop] = float(roi)
         crop_score[crop] = _norm_roi(roi)
+        if projected is not None:
+            crop_projected_price[crop] = float(projected["average_price"])
+            crop_projected_revenue[crop] = float(projected["revenue"])
+            crop_projected_inventory[crop] = float(
+                projected["projected_inventory"]
+            )
+            crop_projected_horizon[crop] = int(projected["horizon_steps"])
+            crop_undersupply_ratio[crop] = max(
+                0.0,
+                (
+                    10000.0
+                    - float(projected["projected_inventory"])
+                )
+                / max(1.0, float(MARKET_CAPACITY[crop])),
+            )
 
     wheat_price = float(_get(prices, "WHEAT", ECON_BASE_PRICE["WHEAT"]) or ECON_BASE_PRICE["WHEAT"])
     wheat_feed_shadow = max(3.0, 0.25 * wheat_price)
@@ -297,6 +499,11 @@ def strategy_snapshot(observation, configuration=None):
         "crop_roi": crop_roi,
         "crop_score": crop_score,
         "crop_viable": crop_viable,
+        "crop_projected_price": crop_projected_price,
+        "crop_projected_revenue": crop_projected_revenue,
+        "crop_projected_inventory": crop_projected_inventory,
+        "crop_projected_horizon": crop_projected_horizon,
+        "crop_undersupply_ratio": crop_undersupply_ratio,
         "animal_roi": animal_roi,
         "animal_score": animal_score,
         "animal_viable": animal_viable,

@@ -459,6 +459,14 @@ def _run_chunk(args):
         "enable_investment_overlay",
         "investment_crop_improvement_ratio",
         "investment_filter_animals",
+        "enable_portfolio_switch",
+        "portfolio_crop_improvement_ratio",
+        "portfolio_feed_reserve_days",
+        "portfolio_activation_step",
+        "portfolio_horizon_extra_days",
+        "portfolio_min_undersupply_ratio",
+        "portfolio_min_shop_demand",
+        "portfolio_source_mode",
     }
     unknown_runtime_options = sorted(
         set(runtime_options) - allowed_runtime_options
@@ -549,6 +557,12 @@ def _run_chunk(args):
                 ),
                 "skill_stats": dict(
                     getattr(runtime, "skill_stats", {}) or {}
+                ),
+                "portfolio_switch_stats": dict(
+                    getattr(runtime, "portfolio_switch_stats", {}) or {}
+                ),
+                "portfolio_switch_events": list(
+                    getattr(runtime, "portfolio_switch_events", []) or []
                 ),
                 "catastrophic_trace": catastrophic_trace,
             }

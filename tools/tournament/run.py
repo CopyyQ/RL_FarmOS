@@ -79,6 +79,15 @@ def deep_merge(base: dict[str, Any], update: dict[str, Any]) -> dict[str, Any]:
 
 def compact_game(row: dict[str, Any]) -> dict[str, Any]:
     dense = dict(row.get("dense_stats") or {})
+    portfolio = dict(row.get("portfolio_switch_stats") or {})
+    event_counts = {}
+    for event in list(row.get("portfolio_switch_events") or []):
+        key = (
+            f"{event.get('kind', '')}:"
+            f"{event.get('from', '')}->{event.get('to', '')}:"
+            f"b{int(event.get('step', 0) or 0) // 72}"
+        )
+        event_counts[key] = event_counts.get(key, 0) + 1
     return {
         "seed": int(row["seed"]),
         "seat": int(row["seat"]),
@@ -91,6 +100,16 @@ def compact_game(row: dict[str, Any]) -> dict[str, Any]:
         "invalid_ops": int(dense.get("invalid_ops", 0) or 0),
         "harvested_units": int(dense.get("harvested_units", 0) or 0),
         "sold_units": int(dense.get("sold_units", 0) or 0),
+        "portfolio_applied_steps": int(
+            portfolio.get("applied_steps", 0) or 0
+        ),
+        "portfolio_seed_switches": int(
+            portfolio.get("seed_switches", 0) or 0
+        ),
+        "portfolio_plant_switches": int(
+            portfolio.get("plant_switches", 0) or 0
+        ),
+        "portfolio_event_counts": event_counts,
     }
 
 
@@ -126,6 +145,9 @@ def summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "invalid_ops": 0,
             "harvested_units": 0,
             "sold_units": 0,
+            "portfolio_applied_steps": 0,
+            "portfolio_seed_switches": 0,
+            "portfolio_plant_switches": 0,
         }
     margins = [float(row["margin"]) for row in rows]
     ordered = sorted(margins)
@@ -148,7 +170,40 @@ def summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "invalid_ops": sum(int(row["invalid_ops"]) for row in rows),
         "harvested_units": sum(int(row["harvested_units"]) for row in rows),
         "sold_units": sum(int(row["sold_units"]) for row in rows),
+        "portfolio_applied_steps": sum(
+            int(row.get("portfolio_applied_steps", 0) or 0)
+            for row in rows
+        ),
+        "portfolio_seed_switches": sum(
+            int(row.get("portfolio_seed_switches", 0) or 0)
+            for row in rows
+        ),
+        "portfolio_plant_switches": sum(
+            int(row.get("portfolio_plant_switches", 0) or 0)
+            for row in rows
+        ),
     }
+
+
+def behavior_signature(rows: list[dict[str, Any]]) -> str:
+    behavior = []
+    for row in sorted(
+        rows, key=lambda r: (int(r["seed"]), int(r["seat"]))
+    ):
+        behavior.append(
+            {
+                "seed": int(row["seed"]),
+                "seat": int(row["seat"]),
+                "events": dict(
+                    sorted(
+                        (row.get("portfolio_event_counts") or {}).items()
+                    )
+                ),
+            }
+        )
+    return hashlib.sha256(
+        canonical_json(behavior).encode()
+    ).hexdigest()[:16]
 
 
 def paired_deltas(
@@ -419,10 +474,23 @@ def main() -> None:
     if workers <= 0:
         workers = max(1, min(16, (os.cpu_count() or 4) - 4))
 
+    source_files = (
+        ROOT / "winner_train.py",
+        ROOT / "v45_skill_runtime.py",
+        ROOT / "v45_skill_runtime_actkeep.py",
+        ROOT / "src" / "kaggrl" / "v4_farm_supervisor.py",
+        ROOT / "src" / "kaggrl" / "v45_economics.py",
+        ROOT / "tools" / "tournament" / "run.py",
+    )
+    source_fingerprint = {
+        str(path.relative_to(ROOT)): sha256_file(path)
+        for path in source_files
+    }
     run_identity = {
         "parent_sha256": sha256_file(parent),
         "snapshot_sha256": sha256_file(snapshot),
         "opponent_sha256": sha256_file(opponent),
+        "source_fingerprint": source_fingerprint,
         "iteration": int(args.iteration),
         "stochastic": True,
         "base_config": base,
@@ -500,6 +568,7 @@ def main() -> None:
                 "id": candidate["id"],
                 "baseline": bool(candidate.get("baseline")),
                 "candidate_key": candidate_hash(candidate),
+                "behavior_signature": behavior_signature(rows),
                 "score": score,
                 "hard_fail": hard_fail,
                 "metrics": metrics,
@@ -531,7 +600,21 @@ def main() -> None:
             row for row in rankings
             if not row["hard_fail"] or bool(row["baseline"])
         ]
-        selected_rows = eligible[:keep]
+        if bool(stage.get("behavior_dedup", False)):
+            selected_rows = []
+            seen_signatures = set()
+            for row in eligible:
+                if bool(row["baseline"]):
+                    continue
+                signature = str(row.get("behavior_signature", ""))
+                if signature in seen_signatures:
+                    continue
+                seen_signatures.add(signature)
+                selected_rows.append(row)
+                if len(selected_rows) >= keep:
+                    break
+        else:
+            selected_rows = eligible[:keep]
         if baseline["id"] not in {row["id"] for row in selected_rows}:
             selected_rows.append(
                 next(row for row in rankings if row["baseline"])

@@ -11,6 +11,7 @@ from kaggrl.v4_farm_supervisor import (
     micro_plant_context_features,
     state_aware_market_orders,
     apply_feasible_investment_overlay,
+    apply_portfolio_switch_overlay,
 )
 
 
@@ -29,6 +30,14 @@ class V45SkillRuntime:
         enable_investment_overlay=False,
         investment_crop_improvement_ratio=1.20,
         investment_filter_animals=True,
+        enable_portfolio_switch=False,
+        portfolio_crop_improvement_ratio=1.30,
+        portfolio_feed_reserve_days=2.0,
+        portfolio_activation_step=144,
+        portfolio_horizon_extra_days=2.0,
+        portfolio_min_undersupply_ratio=0.0,
+        portfolio_min_shop_demand=1.0,
+        portfolio_source_mode="any",
         **kwargs,
     ):
         self.base = ContinuousRuntime(parent_path, snapshot_path, **kwargs)
@@ -41,6 +50,26 @@ class V45SkillRuntime:
         self.enable_investment_overlay = bool(enable_investment_overlay)
         self.investment_crop_improvement_ratio = max(1.0, float(investment_crop_improvement_ratio))
         self.investment_filter_animals = bool(investment_filter_animals)
+        self.enable_portfolio_switch = bool(enable_portfolio_switch)
+        self.portfolio_crop_improvement_ratio = max(
+            1.0, float(portfolio_crop_improvement_ratio)
+        )
+        self.portfolio_feed_reserve_days = max(
+            0.0, float(portfolio_feed_reserve_days)
+        )
+        self.portfolio_activation_step = max(
+            0, int(portfolio_activation_step)
+        )
+        self.portfolio_horizon_extra_days = max(
+            0.0, float(portfolio_horizon_extra_days)
+        )
+        self.portfolio_min_undersupply_ratio = max(
+            0.0, float(portfolio_min_undersupply_ratio)
+        )
+        self.portfolio_min_shop_demand = max(
+            0.0, float(portfolio_min_shop_demand)
+        )
+        self.portfolio_source_mode = str(portfolio_source_mode)
         self.skill_records = []
         self.skill_teacher_records = []
         self.skill_exec_trace = []
@@ -59,6 +88,12 @@ class V45SkillRuntime:
             "applied_steps": 0, "plant_switches": 0, "plant_drops": 0,
             "seed_switches": 0, "seed_drops": 0, "animal_buy_drops": 0,
         }
+        self.portfolio_switch_stats = {
+            "applied_steps": 0,
+            "plant_switches": 0,
+            "seed_switches": 0,
+        }
+        self.portfolio_switch_events = []
 
     def __getattr__(self, name):
         return getattr(self.base, name)
@@ -100,6 +135,12 @@ class V45SkillRuntime:
             "applied_steps": 0, "plant_switches": 0, "plant_drops": 0,
             "seed_switches": 0, "seed_drops": 0, "animal_buy_drops": 0,
         }
+        self.portfolio_switch_stats = {
+            "applied_steps": 0,
+            "plant_switches": 0,
+            "seed_switches": 0,
+        }
+        self.portfolio_switch_events = []
 
     def __call__(self, observation, configuration, context):
         # Keep the V4.4 strategic encoder alive so hidden/economic/opponent
@@ -330,6 +371,32 @@ class V45SkillRuntime:
         h = self.base.micro_cache["hidden"]
         c = self.base.micro_cache["clock"]
 
+        portfolio_switch = {"applied": False}
+        if self.enable_portfolio_switch:
+            action, portfolio_switch = apply_portfolio_switch_overlay(
+                observation,
+                action,
+                crop_improvement_ratio=self.portfolio_crop_improvement_ratio,
+                feed_reserve_days=self.portfolio_feed_reserve_days,
+                activation_step=self.portfolio_activation_step,
+                projected_horizon_extra_days=self.portfolio_horizon_extra_days,
+                min_undersupply_ratio=self.portfolio_min_undersupply_ratio,
+                min_shop_demand=self.portfolio_min_shop_demand,
+                source_mode=self.portfolio_source_mode,
+            )
+            if bool(portfolio_switch.get("applied", False)):
+                self.portfolio_switch_stats["applied_steps"] += 1
+            for key in ("plant_switches", "seed_switches"):
+                self.portfolio_switch_stats[key] += int(
+                    portfolio_switch.get(key, 0) or 0
+                )
+            for event in portfolio_switch.get("events", []) or []:
+                if len(self.portfolio_switch_events) >= 128:
+                    break
+                row = dict(event)
+                row["step"] = int(step)
+                self.portfolio_switch_events.append(row)
+
         investment_overlay = {"applied": False}
         if self.enable_investment_overlay:
             action, investment_overlay = apply_feasible_investment_overlay(
@@ -373,6 +440,7 @@ class V45SkillRuntime:
                     "cutover_step": int(self.skill_cutover_step),
                     "scheduler": "shadow_macro_teacher",
                     "investment_overlay": dict(investment_overlay),
+                    "portfolio_switch": dict(portfolio_switch),
                 }
             )
             return base_action, meta
@@ -549,4 +617,5 @@ class V45SkillRuntime:
             "market_ops": len(out.get("market") or []),
             "scheduler": "shadow_bc_confidence_gated_skill_ppo_v2",
             "investment_overlay": dict(investment_overlay),
+            "portfolio_switch": dict(portfolio_switch),
         }

@@ -1,0 +1,56 @@
+{
+  "schema": "farmos_tournament_stages_v1",
+  "stages": [
+    {
+      "name": "targeted_regimes",
+      "seeds": [23238530, 23238531, 23238532, 23239010, 23239011, 23239013],
+      "keep": 20,
+      "behavior_dedup": true,
+      "cvar_weight": 0.35,
+      "p10_weight": 0.15,
+      "win_rate_weight": 3000.0,
+      "hard_cvar_floor": -8000.0,
+      "hard_worst_floor": -12000.0,
+      "hard_mean_floor": -4000.0
+    },
+    {
+      "name": "fresh_race",
+      "seed_start": 23243000,
+      "seed_count": 16,
+      "keep": 5,
+      "behavior_dedup": true,
+      "cvar_weight": 0.45,
+      "p10_weight": 0.20,
+      "win_rate_weight": 4500.0,
+      "hard_cvar_floor": -3000.0,
+      "hard_worst_floor": -7000.0,
+      "hard_mean_floor": -2000.0
+    },
+    {
+      "name": "fresh_validate",
+      "seed_start": 23244000,
+      "seed_count": 32,
+      "keep": 2,
+      "behavior_dedup": true,
+      "cvar_weight": 0.50,
+      "p10_weight": 0.25,
+      "win_rate_weight": 5500.0,
+      "hard_cvar_floor": -2000.0,
+      "hard_worst_floor": -5000.0,
+      "hard_mean_floor": -1000.0
+    },
+    {
+      "name": "hidden_holdout",
+      "seed_start": 23245000,
+      "seed_count": 64,
+      "keep": 2,
+      "behavior_dedup": false,
+      "cvar_weight": 0.60,
+      "p10_weight": 0.30,
+      "win_rate_weight": 6500.0,
+      "hard_cvar_floor": -1000.0,
+      "hard_worst_floor": -3000.0,
+      "hard_mean_floor": -500.0
+    }
+  ]
+}

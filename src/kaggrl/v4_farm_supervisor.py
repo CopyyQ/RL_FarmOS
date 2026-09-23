@@ -3,7 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from kaggrl.v45_economics import strategy_snapshot, CROP_META, ANIMAL_META, ECON_BASE_PRICE
+from kaggrl.v45_economics import (
+    strategy_snapshot,
+    projected_farm_output,
+    CROP_META,
+    ANIMAL_META,
+    ECON_BASE_PRICE,
+)
 
 MOVES = frozenset({"NORTH", "SOUTH", "EAST", "WEST"})
 MICRO_TASKS = (
@@ -1131,6 +1137,284 @@ def apply_feasible_investment_overlay(
         if viable_crops else None
     )
     meta["care_headroom"] = float(snap["care_headroom"])
+    return out, meta
+
+
+def apply_portfolio_switch_overlay(
+    observation,
+    action,
+    *,
+    crop_improvement_ratio=1.30,
+    feed_reserve_days=2.0,
+    activation_step=144,
+    projected_horizon_extra_days=2.0,
+    min_undersupply_ratio=0.0,
+    min_shop_demand=1.0,
+    source_mode="any",
+):
+    """Rewrite existing seed/plant targets using forward market economics.
+
+    This overlay is intentionally switch-only:
+    - no market/unit action slot is added,
+    - no action is dropped,
+    - no global atomic-plant sanitization is performed,
+    - same-step PLANT can switch only to seed already owned,
+    - WHEAT is protected whenever near-term feed coverage is insufficient.
+    """
+    step = int(_get(observation, "step", 0) or 0)
+    if step < int(activation_step):
+        return action, {
+            "applied": False,
+            "reason": "before_activation",
+            "step": step,
+            "events": [],
+        }
+
+    town = _get(observation, "town", {}) or {}
+    shops = list(_get(town, "unlocked_shops", []) or [])
+    if not shops:
+        return action, {
+            "applied": False,
+            "reason": "no_shops",
+            "step": step,
+            "events": [],
+        }
+
+    farm, _ = _farm(observation)
+    if farm is None:
+        return action, {"applied": False, "reason": "no_farm", "events": []}
+
+    snap = strategy_snapshot(
+        observation,
+        projected_crop_value=True,
+        projected_crop_horizon_extra_days=float(
+            projected_horizon_extra_days
+        ),
+    )
+    private = _private(observation)
+    seed_store = _get(private, "seeds", {}) or {}
+    seeds = {
+        crop: int(_get(seed_store, crop, 0) or 0)
+        for crop in CROP_META
+    }
+    shed = _shed(observation)
+    inventories = _inventories(
+        observation, 1 + len(_get(farm, "hands", []) or [])
+    )
+
+    active_animals = sum(
+        1
+        for row in (_get(farm, "tiles", []) or [])
+        for tile in (row or [])
+        if isinstance(tile, dict) and tile.get("animal") in ANIMAL_META
+    )
+    pending_animals = sum(
+        int(_get(shed, animal, 0) or 0)
+        + sum(int(_get(inv, animal, 0) or 0) for inv in inventories)
+        for animal in ANIMAL_META
+    )
+    animal_commitment = active_animals + pending_animals
+    reserve_days = max(0.0, float(feed_reserve_days))
+    feed_need = float(animal_commitment) * reserve_days
+    carried_wheat = sum(
+        int(_get(inv, "WHEAT", 0) or 0) for inv in inventories
+    )
+    shed_wheat = int(_get(shed, "WHEAT", 0) or 0)
+    near_wheat = float(
+        projected_farm_output(
+            observation, reserve_days
+        ).get("WHEAT", 0.0)
+    )
+    feed_available = float(carried_wheat + shed_wheat) + near_wheat
+    feed_surplus = feed_available - feed_need
+
+    out = {
+        "farmer": _normalize_action((action or {}).get("farmer")),
+        "hands": [
+            _normalize_action(x)
+            for x in ((action or {}).get("hands") or [])
+        ],
+        "market": [
+            list(x)
+            for x in ((action or {}).get("market") or [])
+            if isinstance(x, (list, tuple)) and x
+        ],
+    }
+    meta = {
+        "applied": False,
+        "step": step,
+        "shops": list(shops),
+        "seed_switches": 0,
+        "plant_switches": 0,
+        "feed_need": float(feed_need),
+        "feed_available": float(feed_available),
+        "feed_surplus": float(feed_surplus),
+        "events": [],
+    }
+
+    viable = [
+        crop
+        for crop in CROP_META
+        if bool(snap["crop_viable"].get(crop, False))
+        and float(snap["demand"].get(crop, 0.0))
+        >= float(min_shop_demand)
+        and float(snap["crop_undersupply_ratio"].get(crop, 0.0))
+        >= float(min_undersupply_ratio)
+    ]
+
+    def source_allowed(original):
+        mode = str(source_mode)
+        if mode == "wheat":
+            return original == "WHEAT"
+        if mode == "nonbest":
+            if not viable:
+                return False
+            best = max(
+                viable,
+                key=lambda c: float(snap["crop_roi"].get(c, 0.0)),
+            )
+            return original != best
+        return True
+
+    def choose(original, available_seed=None):
+        original = str(original)
+        if original not in CROP_META or not source_allowed(original):
+            return original
+        if (
+            original == "WHEAT"
+            and animal_commitment > 0
+            and feed_surplus <= 0.0
+        ):
+            return original
+
+        candidates = []
+        for crop in viable:
+            if crop == original:
+                continue
+            if available_seed is not None and int(
+                available_seed.get(crop, 0)
+            ) <= 0:
+                continue
+            candidates.append(crop)
+        if not candidates:
+            return original
+
+        best = max(
+            candidates,
+            key=lambda c: (
+                float(snap["crop_roi"].get(c, 0.0)),
+                float(snap["crop_projected_price"].get(c, 0.0)),
+                -float(CROP_META[c]["first"]),
+                c,
+            ),
+        )
+        old_roi = max(
+            1e-6, float(snap["crop_roi"].get(original, 0.0))
+        )
+        new_roi = float(snap["crop_roi"].get(best, 0.0))
+        if new_roi < old_roi * float(crop_improvement_ratio):
+            return original
+        return best
+
+    for index, order in enumerate(list(out["market"])):
+        if (
+            not order
+            or str(order[0]) != "BUY_SEED"
+            or len(order) < 3
+        ):
+            continue
+        original = str(order[1])
+        replacement = choose(original)
+        if replacement == original:
+            continue
+        new_order = list(order)
+        new_order[1] = replacement
+        out["market"][index] = new_order
+        meta["seed_switches"] += 1
+        meta["applied"] = True
+        meta["events"].append(
+            {
+                "kind": "switch_seed",
+                "from": original,
+                "to": replacement,
+                "old_roi": float(snap["crop_roi"].get(original, 0.0)),
+                "new_roi": float(snap["crop_roi"].get(replacement, 0.0)),
+                "projected_price": float(
+                    snap["crop_projected_price"].get(replacement, 0.0)
+                ),
+                "projected_inventory": float(
+                    snap["crop_projected_inventory"].get(
+                        replacement, 10000.0
+                    )
+                ),
+                "undersupply_ratio": float(
+                    snap["crop_undersupply_ratio"].get(replacement, 0.0)
+                ),
+            }
+        )
+
+    available = dict(seeds)
+    units = [("farmer", -1, out["farmer"])] + [
+        ("hand", i, x) for i, x in enumerate(out["hands"])
+    ]
+    for kind, idx, unit_action in units:
+        if (
+            not unit_action
+            or str(unit_action[0]) != "PLANT"
+            or len(unit_action) < 2
+        ):
+            continue
+        original = str(unit_action[1])
+        replacement = choose(original, available)
+        if replacement != original:
+            new_action = ["PLANT", replacement]
+            available[replacement] = max(
+                0, int(available.get(replacement, 0)) - 1
+            )
+            meta["plant_switches"] += 1
+            meta["applied"] = True
+            meta["events"].append(
+                {
+                    "kind": "switch_plant",
+                    "from": original,
+                    "to": replacement,
+                    "unit": int(idx),
+                    "old_roi": float(
+                        snap["crop_roi"].get(original, 0.0)
+                    ),
+                    "new_roi": float(
+                        snap["crop_roi"].get(replacement, 0.0)
+                    ),
+                    "projected_price": float(
+                        snap["crop_projected_price"].get(
+                            replacement, 0.0
+                        )
+                    ),
+                    "undersupply_ratio": float(
+                        snap["crop_undersupply_ratio"].get(
+                            replacement, 0.0
+                        )
+                    ),
+                }
+            )
+        else:
+            new_action = list(unit_action)
+            if original in available and available[original] > 0:
+                available[original] -= 1
+
+        if kind == "farmer":
+            out["farmer"] = new_action
+        else:
+            out["hands"][idx] = new_action
+
+    meta["best_crop"] = (
+        max(
+            viable,
+            key=lambda c: float(snap["crop_roi"].get(c, 0.0)),
+        )
+        if viable
+        else None
+    )
     return out, meta
 
 
