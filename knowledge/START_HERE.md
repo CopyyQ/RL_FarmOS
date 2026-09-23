@@ -534,20 +534,57 @@ Do not append contradictory conclusions without resolving which one is current.
 
 ---
 
-## 15. Current next action
+## 15. Latest stage-by-stage forensic finding
 
-**Implement and benchmark feed-reserve-aware post-shop crop switching.**
+See `knowledge/STAGE_MONEY_FORENSICS.md` for the full transaction-level analysis.
 
-Target design:
+Strongest verified result:
 
-- preserve action count,
-- do not alter day-0 opening,
-- only adapt after shop information is available,
-- forecast market scarcity at the candidate crop's first-yield horizon,
-- protect only the WHEAT amount required for feed reserve,
-- allow surplus WHEAT investment to switch to a higher projected-ROI crop,
-- benchmark targeted first,
-- then 32 fresh paired,
-- only promote after 64–128 paired evidence.
+- seed `23238530` reproduces roughly `-68k` on both seats;
+- v51 builds 10 TOMATO plants while our policy builds 0;
+- v51 later sells 80 TOMATO for about **65,833**;
+- this accounts for about **95% of the final-phase cash-gap deterioration**;
+- before those sales, our cash can still be positive while the economic horizon gap is already around **-26k**;
+- seed `23238531` does not create the same TOMATO scarcity regime and finishes around `-4.2k`, showing that the catastrophic failure is strongly regime-dependent.
 
-If this fails, the next layer to investigate is shop-aware animal/product portfolio allocation and endgame monetization — **not** a larger neural architecture by default.
+The 100-candidate ACT/confidence/cutover tournament found only about **+155/game** at best and many top configs collapsed to the same `cutover=696` behavior. Treat this family as a minor tuning axis, not the main gap source.
+
+---
+
+## 16. Current next action
+
+**Build the first 100-candidate economic/portfolio tournament.**
+
+The first candidate family must test shop-aware forward allocation rather than runtime thresholds.
+
+Priority variables:
+
+- product sink rate from the unlocked-shop multiset,
+- projected price at first-yield horizon,
+- feed reserve days,
+- crop-switch ROI threshold,
+- activation day / shop-reveal gate,
+- under-supply ratio,
+- critic risk gate,
+- market hold/sell horizon.
+
+Hard design constraints:
+
+- preserve action count where possible,
+- do not alter day-0 opening without evidence,
+- protect only the WHEAT needed for feed safety,
+- do not globally enable rejected atomic PLANT sanitization,
+- do not hard-force routes,
+- keep Kaggle CPU compatibility.
+
+Primary targeted proof:
+
+- recognize the `23238530` TOMATO regime and materially improve it;
+- leave the `23238531` non-TOMATO regime mostly unchanged.
+
+Promotion target:
+
+- at least about +2k/game on fresh validation, or
+- a major tail-risk improvement without mean regression.
+
+Only after a winning economic/portfolio family is found should RL reward shaping or larger architectural changes be revisited.
