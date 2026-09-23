@@ -1,0 +1,1214 @@
+{
+  "schema": "farmos_candidate_manifest_v1",
+  "description": "100-candidate CPU tournament pilot over ACT/KEEP threshold, skill confidence threshold, and skill cutover. This validates the tournament infrastructure; future manifests can replace these runtime parameters with portfolio/market candidates.",
+  "base": {
+    "temperature": 1.00242003614173,
+    "residual_scale": 1.0,
+    "base_keep_bias": 2.3,
+    "decision_every": 24,
+    "skill_keep_penalty": 2.75,
+    "skill_shadow_start_step": 0
+  },
+  "candidates": [
+    {
+      "id": "act0.50_conf0.70_cut672",
+      "baseline": true,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 672
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.5
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.44_conf0.64_cut624",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 624
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.44
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.44_conf0.64_cut648",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 648
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.44
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.44_conf0.64_cut672",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 672
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.44
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.44_conf0.64_cut696",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 696
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.44
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.44_conf0.64_cut720",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 720
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.44
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.44_conf0.68_cut624",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 624
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.44
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.44_conf0.68_cut648",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 648
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.44
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.44_conf0.68_cut672",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 672
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.44
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.44_conf0.68_cut696",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 696
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.44
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.44_conf0.68_cut720",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 720
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.44
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.44_conf0.70_cut624",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 624
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.44
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.44_conf0.70_cut648",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 648
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.44
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.44_conf0.70_cut672",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 672
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.44
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.44_conf0.70_cut696",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 696
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.44
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.44_conf0.70_cut720",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 720
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.44
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.44_conf0.74_cut624",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 624
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.44
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.44_conf0.74_cut648",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 648
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.44
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.44_conf0.74_cut672",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 672
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.44
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.44_conf0.74_cut696",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 696
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.44
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.44_conf0.74_cut720",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 720
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.44
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.47_conf0.64_cut624",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 624
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.47
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.47_conf0.64_cut648",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 648
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.47
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.47_conf0.64_cut672",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 672
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.47
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.47_conf0.64_cut696",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 696
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.47
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.47_conf0.64_cut720",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 720
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.47
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.47_conf0.68_cut624",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 624
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.47
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.47_conf0.68_cut648",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 648
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.47
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.47_conf0.68_cut672",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 672
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.47
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.47_conf0.68_cut696",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 696
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.47
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.47_conf0.68_cut720",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 720
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.47
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.47_conf0.70_cut624",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 624
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.47
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.47_conf0.70_cut648",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 648
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.47
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.47_conf0.70_cut672",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 672
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.47
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.47_conf0.70_cut696",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 696
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.47
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.47_conf0.70_cut720",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 720
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.47
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.47_conf0.74_cut624",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 624
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.47
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.47_conf0.74_cut648",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 648
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.47
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.47_conf0.74_cut672",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 672
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.47
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.47_conf0.74_cut696",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 696
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.47
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.47_conf0.74_cut720",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 720
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.47
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.50_conf0.64_cut624",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 624
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.5
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.50_conf0.64_cut648",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 648
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.5
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.50_conf0.64_cut672",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 672
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.5
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.50_conf0.64_cut696",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 696
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.5
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.50_conf0.64_cut720",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 720
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.5
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.50_conf0.68_cut624",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 624
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.5
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.50_conf0.68_cut648",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 648
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.5
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.50_conf0.68_cut672",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 672
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.5
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.50_conf0.68_cut696",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 696
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.5
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.50_conf0.68_cut720",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 720
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.5
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.50_conf0.70_cut624",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 624
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.5
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.50_conf0.70_cut648",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 648
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.5
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.50_conf0.70_cut696",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 696
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.5
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.50_conf0.70_cut720",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 720
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.5
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.50_conf0.74_cut624",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 624
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.5
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.50_conf0.74_cut648",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 648
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.5
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.50_conf0.74_cut672",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 672
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.5
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.50_conf0.74_cut696",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 696
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.5
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.50_conf0.74_cut720",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 720
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.5
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.53_conf0.64_cut624",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 624
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.53
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.53_conf0.64_cut648",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 648
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.53
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.53_conf0.64_cut672",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 672
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.53
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.53_conf0.64_cut696",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 696
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.53
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.53_conf0.64_cut720",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 720
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.53
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.53_conf0.68_cut624",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 624
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.53
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.53_conf0.68_cut648",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 648
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.53
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.53_conf0.68_cut672",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 672
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.53
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.53_conf0.68_cut696",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 696
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.53
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.53_conf0.68_cut720",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 720
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.53
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.53_conf0.70_cut624",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 624
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.53
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.53_conf0.70_cut648",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 648
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.53
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.53_conf0.70_cut672",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 672
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.53
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.53_conf0.70_cut696",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 696
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.53
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.53_conf0.70_cut720",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 720
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.53
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.53_conf0.74_cut624",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 624
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.53
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.53_conf0.74_cut648",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 648
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.53
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.53_conf0.74_cut672",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 672
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.53
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.53_conf0.74_cut696",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 696
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.53
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.53_conf0.74_cut720",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 720
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.53
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.56_conf0.64_cut624",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 624
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.56
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.56_conf0.64_cut648",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 648
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.56
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.56_conf0.64_cut672",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 672
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.56
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.56_conf0.64_cut696",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 696
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.56
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.56_conf0.64_cut720",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.64,
+        "skill_cutover_step": 720
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.56
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.56_conf0.68_cut624",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 624
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.56
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.56_conf0.68_cut648",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 648
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.56
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.56_conf0.68_cut672",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 672
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.56
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.56_conf0.68_cut696",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 696
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.56
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.56_conf0.68_cut720",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.68,
+        "skill_cutover_step": 720
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.56
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.56_conf0.70_cut624",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 624
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.56
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.56_conf0.70_cut648",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 648
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.56
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.56_conf0.70_cut672",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 672
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.56
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.56_conf0.70_cut696",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 696
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.56
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.56_conf0.70_cut720",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.7,
+        "skill_cutover_step": 720
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.56
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.56_conf0.74_cut624",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 624
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.56
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.56_conf0.74_cut648",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 648
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.56
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.56_conf0.74_cut672",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 672
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.56
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.56_conf0.74_cut696",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 696
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.56
+      },
+      "family": "runtime_gate_cutover"
+    },
+    {
+      "id": "act0.56_conf0.74_cut720",
+      "baseline": false,
+      "rollout": {
+        "skill_confidence_threshold": 0.74,
+        "skill_cutover_step": 720
+      },
+      "runtime_options": {
+        "act_keep_threshold": 0.56
+      },
+      "family": "runtime_gate_cutover"
+    }
+  ]
+}

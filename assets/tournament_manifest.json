@@ -1,0 +1,16 @@
+{
+  "schema": "farmos_tournament_assets_v1",
+  "iteration_context": 1205,
+  "files": {
+    "tournament_actor_iter1205.pt": {
+      "sha256": "3c5fc9dc921ee78ce3fbfa5e5061677e2cf7c6e9cdc1e8560d6d20e2e6d0564c"
+    },
+    "parent_promoted_v2.pt": {
+      "sha256": "74528cb85c25b02e4daacab8c12b404cde7d65d2e701d0909191269deabffebb"
+    },
+    "act_keep_gate_sweep_best.pt": {
+      "sha256": "793bfca58f8a3c7f12f3b287f3d82219271c8ea66fcdae29bb186b814787bc93"
+    }
+  },
+  "notes": "Small benchmark-only assets. Training memories and large checkpoints remain excluded from Git."
+}

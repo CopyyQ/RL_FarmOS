@@ -410,7 +410,9 @@ def _run_chunk(args):
     # Backward compatibility for winner reproduction helpers that still pass
     # the pre-V4.5 10-field rollout tuple.
     if len(args) == 10:
-        args = tuple(args) + (720, 4.50, 432, 0.70)
+        args = tuple(args) + (720, 4.50, 432, 0.70, {})
+    elif len(args) == 14:
+        args = tuple(args) + ({},)
     (
         parent_path,
         snapshot_path,
@@ -426,6 +428,7 @@ def _run_chunk(args):
         skill_keep_penalty,
         skill_shadow_start_step,
         skill_confidence_threshold,
+        runtime_options,
     ) = args
 
     torch.set_num_threads(1)
@@ -449,6 +452,22 @@ def _run_chunk(args):
         os.close(saved_err)
         os.close(null_fd)
 
+    runtime_options = dict(runtime_options or {})
+    allowed_runtime_options = {
+        "act_keep_gate_path",
+        "act_keep_threshold",
+        "enable_investment_overlay",
+        "investment_crop_improvement_ratio",
+        "investment_filter_animals",
+    }
+    unknown_runtime_options = sorted(
+        set(runtime_options) - allowed_runtime_options
+    )
+    if unknown_runtime_options:
+        raise ValueError(
+            "unsupported runtime_options: "
+            + ", ".join(unknown_runtime_options)
+        )
     runtime = V45SkillRuntime(
         parent_path,
         snapshot_path,
@@ -463,6 +482,7 @@ def _run_chunk(args):
         skill_shadow_start_step=skill_shadow_start_step,
         skill_confidence_threshold=skill_confidence_threshold,
         seed=iteration * 1_000_003 + 17,
+        **runtime_options,
     )
     learner = V4HybridRolloutAgent(
         option_policy=runtime,
@@ -647,6 +667,7 @@ def exact_games(
     skill_keep_penalty=4.50,
     skill_shadow_start_step=0,
     skill_confidence_threshold=0.70,
+    runtime_options=None,
 ):
     if both_seats:
         games = [(int(seed), seat) for seed in seeds for seat in (0, 1)]
@@ -674,6 +695,7 @@ def exact_games(
             float(skill_keep_penalty),
             int(skill_shadow_start_step),
             float(skill_confidence_threshold),
+            dict(runtime_options or {}),
         )
         for part in parts
     ]

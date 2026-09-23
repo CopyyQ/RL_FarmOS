@@ -34,6 +34,7 @@ data/
 *.ckpt
 !assets/parent_promoted_v2.pt
 !assets/act_keep_gate_sweep_best.pt
+!assets/tournament_actor_iter1205.pt
 
 # Editors / OS
 .vscode/
