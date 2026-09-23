@@ -201,6 +201,12 @@ def build_critic_examples(trace):
                 "regression_mask": regression_mask,
                 "risk": risk,
                 "terminal_margin": final_margin,
+                "cash_margin_baseline": int(
+                    snapshot.get("cash_margin", row.get("margin", 0)) or 0
+                ),
+                "visible_horizon_baseline": int(
+                    snapshot.get("visible_horizon_advantage", 0) or 0
+                ),
             }
         )
     return examples
